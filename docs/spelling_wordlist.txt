@@ -68,6 +68,7 @@ multipart
 Multipart
 mypy
 Nikolay
+Numpy
 param
 params
 performant

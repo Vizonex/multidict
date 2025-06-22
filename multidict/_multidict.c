@@ -594,7 +594,6 @@ multidict_setdefault(MultiDictObject *self, PyObject *const *args,
     PyObject *key = NULL;
     PyObject *_default = NULL;
     bool decref_default = false;
-    PyObject *ret = NULL;
 
     if (parse2("setdefault",
                args,
@@ -615,9 +614,7 @@ multidict_setdefault(MultiDictObject *self, PyObject *const *args,
         decref_default = true;
     }
     ASSERT_CONSISTENT(self, false);
-    if (md_set_default(self, key, _default, &ret) < 0) {
-        return NULL;
-    }
+    PyObject *ret = md_set_default(self, key, _default);
     if (decref_default) {
         Py_CLEAR(_default);
     }
