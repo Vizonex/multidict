@@ -18,23 +18,24 @@ get_mod_state(PyObject *mod)
 
 #define RETURN_NULL_OR_INCREF(ITEM) \
     PyObject *REF = ITEM;           \
-    if (REF != NULL){  \
-        Py_INCREF(REF); \
-    } \
+    if (REF != NULL) {              \
+        Py_INCREF(REF);             \
+    }                               \
     return REF
 
-#define ITEM_SAFETY_SWITCH(FUNC, STATE, ARGS) \
-    PyObject* RET = NULL; \
-    switch (FUNC(state->capi, args[0], args[1], &RET)){\
-        case -1: {\
-            return NULL; \
-        }\
-        case 0: {\
-            PyErr_SetObject(PyExc_KeyError, args[1]);\
-            return NULL;\
-        }\
-        case 1: return RET;\
-    } 
+#define ITEM_SAFETY_SWITCH(FUNC, STATE, ARGS)            \
+    PyObject *RET = NULL;                                \
+    switch (FUNC(state->capi, args[0], args[1], &RET)) { \
+        case -1: {                                       \
+            return NULL;                                 \
+        }                                                \
+        case 0: {                                        \
+            PyErr_SetObject(PyExc_KeyError, args[1]);    \
+            return NULL;                                 \
+        }                                                \
+        case 1:                                          \
+            return RET;                                  \
+    }
 
 /* module functions */
 
@@ -87,8 +88,9 @@ md_set_default(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
         return NULL;
     }
     mod_state *state = get_mod_state(self);
-    PyObject* result;
-    if (Multidict_SetDefault(state->capi, args[0], args[1], args[2], &result) < 0){
+    PyObject *result;
+    if (Multidict_SetDefault(state->capi, args[0], args[1], args[2], &result) <
+        0) {
         return NULL;
     };
     return result;
@@ -132,7 +134,6 @@ md_contains(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
     return PyBool_FromLong(ret);
 }
 
-
 static PyObject *
 md_getone(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
@@ -145,7 +146,6 @@ md_getone(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
     ITEM_SAFETY_SWITCH(MultiDict_GetOne, state, args);
 }
 
-
 static PyObject *
 md_getall(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
@@ -155,7 +155,7 @@ md_getall(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
         return NULL;
     }
     mod_state *state = get_mod_state(self);
-    PyObject* ret = NULL;
+    PyObject *ret = NULL;
     ITEM_SAFETY_SWITCH(MultiDict_GetAll, state->capi, args);
 }
 
@@ -180,9 +180,9 @@ md_popall(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
         return NULL;
     }
     mod_state *state = get_mod_state(self);
-    PyObject* RET = NULL; 
-    if (MultiDict_PopAll(state->capi, args[0], args[1], &RET) <= 0){
-        PyErr_SetObject(PyExc_KeyError, args[1]); 
+    PyObject *RET = NULL;
+    if (MultiDict_PopAll(state->capi, args[0], args[1], &RET) <= 0) {
+        PyErr_SetObject(PyExc_KeyError, args[1]);
         return NULL;
     }
     return RET;
@@ -192,8 +192,8 @@ static PyObject *
 md_popitem(PyObject *self, PyObject *arg)
 {
     mod_state *state = get_mod_state(self);
-    PyObject *REF = MultiDict_PopItem(state->capi, arg); 
-    if (REF != NULL){ 
+    PyObject *REF = MultiDict_PopItem(state->capi, arg);
+    if (REF != NULL) {
         Py_INCREF(REF);
     }
     return REF;
