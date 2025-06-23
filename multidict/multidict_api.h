@@ -33,8 +33,8 @@ typedef struct {
                          PyObject* value);
     int (*MultiDict_Clear)(void* state, PyObject* self);
 
-    PyObject* (*MultiDict_SetDefault)(void* state, PyObject* self,
-                                      PyObject* key, PyObject* _default);
+    int (*MultiDict_SetDefault)(void* state, PyObject* self,
+                                      PyObject* key, PyObject* value, PyObject** result);
 
     int (*MultiDict_Del)(void* state, PyObject* self, PyObject* key);
     uint64_t (*MultiDict_Version)(void* state, PyObject* self);
@@ -146,9 +146,9 @@ MultiDict_Clear(MultiDict_CAPI* api, PyObject* self)
 /// @return default on success, NULL on failure
 PyObject*
 Multidict_SetDefault(MultiDict_CAPI* api, PyObject* self, PyObject* key,
-                     PyObject* _default)
+                     PyObject* _default, PyObject** result)
 {
-    return api->MultiDict_SetDefault(api->state, self, key, _default);
+    return api->MultiDict_SetDefault(api->state, self, key, _default, result);
 }
 
 /// @brief Remove all items where key is equal to key from d.

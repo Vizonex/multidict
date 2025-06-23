@@ -85,8 +85,11 @@ md_set_default(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
         return NULL;
     }
     mod_state *state = get_mod_state(self);
-    RETURN_NULL_OR_INCREF(
-        Multidict_SetDefault(state->capi, args[0], args[1], args[2]));
+    PyObject* result;
+    if (Multidict_SetDefault(state->capi, args[0], args[1], args[2], &result) < 0){
+        return NULL;
+    };
+    return result;
 }
 
 static PyObject *
