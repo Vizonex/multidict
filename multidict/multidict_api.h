@@ -7,6 +7,7 @@ extern "C" {
 
 #include <Python.h>
 #include <stdbool.h>
+#include <assert.h>
 
 #define MultiDict_MODULE_NAME "multidict._multidict"
 #define MultiDict_CAPI_NAME "CAPI"
@@ -39,12 +40,10 @@ typedef struct {
     uint64_t (*MultiDict_Version)(void* state, PyObject* self);
 
     int (*MultiDict_Contains)(void* state, PyObject* self, PyObject* key);
-    PyObject* (*MultiDict_Get)(void* state, PyObject* self, PyObject* key);
-    PyObject* (*MultiDict_GetOne)(void* state, PyObject* self, PyObject* key);
-    PyObject* (*MultiDict_GetAll)(void* state, PyObject* self, PyObject* key);
-    PyObject* (*MultiDict_Pop)(void* state, PyObject* self, PyObject* key);
-    PyObject* (*MultiDict_PopOne)(void* state, PyObject* self, PyObject* key);
-    PyObject* (*MultiDict_PopAll)(void* state, PyObject* self, PyObject* key);
+    int (*MultiDict_GetOne)(void *state_, PyObject *self, PyObject *key, PyObject **result);
+    int (*MultiDict_GetAll)(void *state_, PyObject *self, PyObject *key, PyObject **result);
+    int (*MultiDict_PopOne)(void *state_, PyObject *self, PyObject *key, PyObject **result);
+    int (*MultiDict_PopAll)(void *state_, PyObject *self, PyObject *key, PyObject **result);
     PyObject* (*MultiDict_PopItem)(void* state, PyObject* self);
     int (*MultiDict_Replace)(void* state, PyObject* self, PyObject* key,
                              PyObject* value);
@@ -209,24 +208,12 @@ MultiDict_Contains(MultiDict_CAPI* api, PyObject* self, PyObject* key)
 /// @param key the key to get one item from
 /// @return returns a default value on success, -1 with `KeyError` or
 /// `TypeError` on failure
-static inline PyObject*
-MultiDict_GetOne(MultiDict_CAPI* api, PyObject* self, PyObject* key)
+static inline int
+MultiDict_GetOne(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject** result)
 {
-    return api->MultiDict_GetOne(api->state, self, key);
+    return api->MultiDict_GetOne(api->state, self, key, result);
 }
 
-/// @brief Return the **first** value for *key* if *key* is in the
-/// dictionary, else None.
-/// @param api Python Capsule Pointer
-/// @param self the multidict object
-/// @param key the key to get one item from
-/// @return returns a default value on success,  NULL is returned and raises
-/// `TypeError` on failure
-static inline PyObject*
-MultiDict_Get(MultiDict_CAPI* api, PyObject* self, PyObject* key)
-{
-    return api->MultiDict_Get(api->state, self, key);
-}
 
 /// @brief Return a list of all values for *key* if *key* is in the
 /// dictionary, else *default*.
@@ -235,23 +222,12 @@ MultiDict_Get(MultiDict_CAPI* api, PyObject* self, PyObject* key)
 /// @param key the key to obtain all the items from
 /// @return a list of all the values, otherwise NULL on error
 /// raises either `KeyError` or `TypeError`
-static inline PyObject*
-MultiDict_GetAll(MultiDict_CAPI* api, PyObject* self, PyObject* key)
+static inline int
+MultiDict_GetAll(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject** result)
 {
-    return api->MultiDict_GetAll(api, self, key);
+    return api->MultiDict_GetAll(api, self, key, result);
 }
 
-/// @brief  Remove and return a value from the dictionary.
-/// @param api Python Capsule Pointer
-/// @param self the multidict object
-/// @param key the key to remove
-/// @return corresponding value on success or None, otherwise raises TypeError
-/// and returns NULL
-static inline PyObject*
-MultiDict_Pop(MultiDict_CAPI* api, PyObject* self, PyObject* key)
-{
-    return api->MultiDict_Pop(api->state, self, key);
-}
 
 /// @brief  If `key` is in the dictionary, remove it and return its the
 /// `first` value, else return `default`.
@@ -260,10 +236,10 @@ MultiDict_Pop(MultiDict_CAPI* api, PyObject* self, PyObject* key)
 /// @param key the key to pop
 /// @return object on success, otherwise NULL on error along
 /// with `KeyError` or `TypeError` being raised
-static inline PyObject*
-MultiDict_PopOne(MultiDict_CAPI* api, PyObject* self, PyObject* key)
+static inline int
+MultiDict_PopOne(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject** result)
 {
-    return api->MultiDict_PopOne(api->state, self, key);
+    return api->MultiDict_PopOne(api->state, self, key, result);
 }
 
 /// @brief Pops all related objects corresponding to `key`
@@ -272,10 +248,10 @@ MultiDict_PopOne(MultiDict_CAPI* api, PyObject* self, PyObject* key)
 /// @param key the key to pop all of
 /// @return list object on success, otherwise NULL, on error and raises either
 /// `KeyError` or `TyperError`
-static inline PyObject*
-MultiDict_PopAll(MultiDict_CAPI* api, PyObject* self, PyObject* key)
+static inline int
+MultiDict_PopAll(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject** result)
 {
-    return api->MultiDict_PopAll(api->state, self, key);
+    return api->MultiDict_PopAll(api->state, self, key, result);
 }
 
 /// @brief Remove and return an arbitrary `(key, value)` pair from the

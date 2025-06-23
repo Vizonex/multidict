@@ -566,28 +566,23 @@ The library is also shipped with a C-API, the header files can be compiled using
    :retval -1: if failure had occured
 
 
-.. c:function:: static inline PyObject* MultiDict_GetOne(MultiDict_CAPI* api, PyObject* self, PyObject* key)
+.. c:function:: static inline PyObject* MultiDict_GetOne(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject** result)
 
    Return the **first** value for *key* if *key* is in the
-   dictionary, else *default*.
+   dictionary, else *NULL*.
 
    :param api: Python Capsule Pointer
    :param self: the :class:`MultiDict` object
    :param key: the key to get one item from
-   :returns: a default value on success, 
-   :retval NULL: with :exc:`KeyError` or :exc:`TypeError` raised on failure
+   :param result: the object to attached the 
+   obainted object to.
+   :retval 1: on sucess
+   :retval 0: on failure (No exceptions are raised)
+   :retval -1: on :exc:`TypeError` raised
 
-.. c:function:: static inline PyObject* MultiDict_Get(MultiDict_CAPI* api, PyObject* self, PyObject* key)
+   
 
-   Return the **first** value for *key* if *key* is in the dictionary, else None.
-
-   :param api: Python Capsule Pointer
-   :param self: the :class:`MultiDict` object
-   :param key: the key to get one item from
-   :returns: a default value None on success 
-   :retval NULL: is returned and raises, :exc:`TypeError` on failure
-
-.. c:function:: static inline PyObject* MultiDict_Pop(MultiDict_CAPI* api, PyObject* self, PyObject* key)
+.. c:function:: static inline PyObject* MultiDict_PopOne(MultiDict_CAPI* api, PyObject* self, PyObject* key)
 
    Remove and return a value from the dictionary.
 

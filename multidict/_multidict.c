@@ -1495,6 +1495,15 @@ module_exec(PyObject *mod)
     if (PyModule_AddType(mod, state->ValuesViewType) < 0) {
         goto fail;
     }
+    
+    PyObject *capsule = new_capsule(state);
+    if (capsule == NULL) {
+        goto fail;
+    }
+
+    if (PyModule_Add(mod, MultiDict_CAPI_NAME, capsule) < 0) {
+        goto fail;
+    }
 
     return 0;
 fail:
