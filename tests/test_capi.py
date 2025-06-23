@@ -41,6 +41,7 @@ def test_md_del() -> None:
     with pytest.raises(KeyError, match="key"):
         testcapi.md_del(d, "key")
 
+
 def test_md_equals() -> None:
     d: MultiDictStr = multidict.MultiDict([("key", "val1")])
     assert testcapi.md_equals(d, multidict.MultiDict([("key", "val1")]))
@@ -55,23 +56,28 @@ def test_md_get_all() -> None:
     d.add("key2", "val2")
     d.add("key1", "val3")
     ret = testcapi.md_getall(d, "key1")
-    assert (['val1', 'val3'], True) == ret
+    assert (["val1", "val3"], True) == ret
 
 
 def test_md_get_all_miss() -> None:
     d = multidict.MultiDict([("key", "value1")], key="value2")
     assert testcapi.md_getall(d, "x")[1] is False
 
+
 def test_md_getone() -> None:
     d: MultiDictStr = multidict.MultiDict(key="val1")
     d.add("key", "val2")
-    assert testcapi.md_getone(d, "key") == ('val1', True)
+    assert testcapi.md_getone(d, "key") == ("val1", True)
+
 
 def test_md_getone_miss() -> None:
     d: MultiDictStr = multidict.MultiDict([("key", "value1")], key="value2")
     assert testcapi.md_getone(d, "x")[1] is False
 
-@pytest.mark.skip("GC/WeakRef Releated Bug: SEE: https://github.com/aio-libs/multidict/pull/1190#discussion_r2162536248")
+
+@pytest.mark.skip(
+    "GC/WeakRef Releated Bug: SEE: https://github.com/aio-libs/multidict/pull/1190#discussion_r2162536248"
+)
 def test_md_new() -> None:
     md = testcapi.md_new(0)
     assert isinstance(md, multidict.MultiDict)
