@@ -23,11 +23,7 @@ extern "C" {
         return ON_FAIL;                                              \
     }
 
-#define __MULTIDICT_RETURN_IF_FOUND(FUNC, SELF, KEY, ITEM) \
-    if (FUNC((MultiDictObject*)(SELF), (KEY), ITEM) < 0) { \
-        return -1;                                         \
-    }                                                      \
-    return ((*ITEM) != NULL)
+
 
 static PyTypeObject*
 MultiDict_GetType(void* state_)
@@ -111,12 +107,10 @@ MultiDict_GetOne(void* state_, PyObject* self, PyObject* key,
                  PyObject** result)
 {
     __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    // GetOne should follow the same concept as PyDict_GetItemRef
-    PyObject* item = NULL;
 
     // TODO: edit md_get_one to return 0 if not found, 1 if found.
     // For now the macro made will suffice...
-    __MULTIDICT_RETURN_IF_FOUND(md_get_one, self, key, result);
+    return md_get_one(self, key, result);
 }
 
 static int
@@ -124,7 +118,7 @@ MultiDict_GetAll(void* state_, PyObject* self, PyObject* key,
                  PyObject** result)
 {
     __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    __MULTIDICT_RETURN_IF_FOUND(md_get_all, self, key, result);
+    return md_get_all(self, key, result);
 }
 
 static int
@@ -133,7 +127,7 @@ MultiDict_PopOne(void* state_, PyObject* self, PyObject* key,
 {
     __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
     PyObject* item = NULL;
-    __MULTIDICT_RETURN_IF_FOUND(md_pop_one, self, key, result);
+    return md_pop_one(self, key, result);
 }
 
 static int
@@ -141,7 +135,7 @@ MultiDict_PopAll(void* state_, PyObject* self, PyObject* key,
                  PyObject** result)
 {
     __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    __MULTIDICT_RETURN_IF_FOUND(md_pop_all, self, key, result);
+    return md_pop_all(self, key, result);
 }
 
 static PyObject*
