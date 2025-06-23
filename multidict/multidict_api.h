@@ -33,9 +33,9 @@ typedef struct {
                          PyObject* value);
     int (*MultiDict_Clear)(void* state, PyObject* self);
 
-    PyObject* (*MultiDict_SetDefault)(void* state, PyObject* self,
-                                      PyObject* key, PyObject* value);
-
+    int (*MultiDict_SetDefault)(void *state, PyObject *self, PyObject *key, 
+        PyObject *default_, PyObject **result);
+    
     int (*MultiDict_Del)(void* state, PyObject* self, PyObject* key);
     uint64_t (*MultiDict_Version)(void* state, PyObject* self);
 
@@ -141,6 +141,7 @@ MultiDict_Clear(MultiDict_CAPI* api, PyObject* self)
     return api->MultiDict_Clear(api->state, self);
 }
 
+/// XXX: Documentation is incorrect I will need to edit in a bit - Vizonex
 /// @brief If key is in the dictionary  its the first value.
 /// If not, insert key with a value of default and return default.
 /// @param api Python Capsule Pointer
@@ -148,11 +149,11 @@ MultiDict_Clear(MultiDict_CAPI* api, PyObject* self)
 /// @param key the key to insert
 /// @param _default the default value to have inserted
 /// @return default on success, NULL on failure
-PyObject*
-Multidict_SetDefault(MultiDict_CAPI* api, PyObject* self, PyObject* key,
-                     PyObject* _default)
+static inline int
+MultiDict_SetDefault(MultiDict_CAPI *api, PyObject *self, PyObject *key,
+                     PyObject *default_, PyObject **result)
 {
-    return api->MultiDict_SetDefault(api->state, self, key, _default);
+    return api->MultiDict_SetDefault(api->state, self, key, default_, result);
 }
 
 /// @brief Remove all items where key is equal to key from d.

@@ -14,41 +14,78 @@ get_mod_state(PyObject *mod)
     return state;
 }
 
-#define PyBool_As_CBool(obj) PyObject_IsTrue(obj) ? true : false
+static inline MultiDict_CAPI* 
+get_capi(PyObject* mod){
+    return get_mod_state(mod)->capi;
+}
 
-#define RETURN_NULL_OR_INCREF(ITEM) \
-    PyObject *REF = ITEM;           \
-    if (REF != NULL) {              \
-        Py_INCREF(REF);             \
-    }                               \
-    return REF
+static int
+check_nargs(const char *name, Py_ssize_t nargs, Py_ssize_t required)
+{
+    if (nargs != required) {
+        PyErr_Format(PyExc_TypeError,
+                     "%s should be called with %d arguments, got %d",
+                     name,
+                     required,
+                     nargs);
+        return -1;
+    }
+    return 0;
+}
+
+// Took the most repetative part and put it right here to help 
+// you can get rid of this comment before the pr is finished,
+// Using a function was less confusing here than a macro - Vizonex
+
+static PyObject* handle_reuslt(int ret, PyObject* result){
+    if (ret < 0) {
+        return NULL;
+    }
+    // Test if we missed 
+    if (ret == 0){
+        return PyTuple_Pack(2, Py_None, Py_False);
+    }
+    assert(result != NULL);
+    PyObject *val = PyBool_FromLong(ret);
+    if (val == NULL) {
+        Py_CLEAR(result);
+        return NULL;
+    }
+    return PyTuple_Pack(2, result, val);
+}
 
 /* module functions */
 
 static PyObject *
-md_type(PyObject *self, PyObject *unused)
+md_type(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    mod_state *state = get_mod_state(self);
-    return Py_NewRef(MultiDict_GetType(state->capi));
+    if (check_nargs("md_type", nargs, 0) < 0) {
+        return NULL;
+    }
+    return Py_NewRef(MultiDict_GetType(get_capi(self)));
 }
 
 static PyObject *
-md_new(PyObject *self, PyObject *arg)
-{
-    mod_state *state = get_mod_state(self);
-    return MultiDict_New(state->capi, 0);
+md_new(PyObject *self, PyObject* arg)
+{   
+    long prealloc_size = PyLong_AsLong(arg);
+    if (prealloc_size < 0) {
+        if (!PyErr_Occurred()) {
+            PyErr_SetString(PyExc_ValueError,
+                            "Negative prealloc_size is not allowed");
+        }
+        return NULL;
+    }
+    return MultiDict_New(get_capi(self), prealloc_size);
 }
 
 static PyObject *
 md_add(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (nargs != 3) {
-        PyErr_SetString(PyExc_TypeError,
-                        "md_add should be called with md, key and value");
+    if (check_nargs("md_add", nargs, 3) < 0) {
         return NULL;
     }
-    mod_state *state = get_mod_state(self);
-    if (MultiDict_Add(state->capi, args[0], args[1], args[2]) < 0) {
+    if (MultiDict_Add(get_capi(self), args[0], args[1], args[2]) < 0) {
         return NULL;
     }
     Py_RETURN_NONE;
@@ -57,37 +94,32 @@ md_add(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 static PyObject *
 md_clear(PyObject *self, PyObject *arg)
 {
-    mod_state *state = get_mod_state(self);
-    if (MultiDict_Clear(state->capi, arg) < 0) {
+    if (MultiDict_Clear(get_capi(self), arg) < 0) {
         return NULL;
     }
     Py_RETURN_NONE;
 }
 
 static PyObject *
-md_set_default(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
+md_setdefault(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (nargs != 3) {
-        PyErr_SetString(
-            PyExc_TypeError,
-            "md_set_default should be called with md, key and value");
+    if (check_nargs("md_setdefault", nargs, 3) < 0) {
         return NULL;
     }
-    mod_state *state = get_mod_state(self);
-    PyObject *result;
-    return Multidict_SetDefault(state->capi, args[0], args[1], args[2]);
+    PyObject *result = NULL;
+    int ret = MultiDict_SetDefault(get_capi(self), args[0], args[1], args[2], &result);
+    return handle_reuslt(ret, result);
 }
 
 static PyObject *
 md_del(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (nargs != 2) {
-        PyErr_SetString(PyExc_TypeError,
-                        "md_del should be called with md and key");
+    // handle this check first so that there's an immediate exit
+    // rather than waiting for the state to be obtained
+    if (check_nargs("md_del", nargs, 2) < 0){
         return NULL;
     }
-    mod_state *state = get_mod_state(self);
-    if ((MutliDict_Del(state->capi, args[0], args[1])) < 0) {
+    if ((MutliDict_Del(get_capi(self), args[0], args[1])) < 0) {
         return NULL;
     }
     Py_RETURN_NONE;
@@ -96,20 +128,16 @@ md_del(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 static PyObject *
 md_version(PyObject *self, PyObject *arg)
 {
-    mod_state *state = get_mod_state(self);
-    return PyLong_FromUnsignedLongLong(MultiDict_Version(state->capi, arg));
+    return PyLong_FromUnsignedLongLong(MultiDict_Version(get_capi(self), arg));
 }
 
 static PyObject *
 md_contains(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (nargs != 2) {
-        PyErr_SetString(PyExc_TypeError,
-                        "md_contains should be called with md and key");
+    if (check_nargs("md_contains", nargs, 2) < 0){
         return NULL;
     }
-    mod_state *state = get_mod_state(self);
-    int ret = MultiDict_Contains(state->capi, args[0], args[1]);
+    int ret = MultiDict_Contains(get_capi(self), args[0], args[1]);
     if (ret == -1) {
         return NULL;
     }
@@ -119,93 +147,53 @@ md_contains(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 static PyObject *
 md_getone(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (nargs != 2) {
-        PyErr_SetString(PyExc_TypeError,
-                        "md_get_all should be called with md and key");
+    if (check_nargs("md_getone", nargs, 2) < 0){
         return NULL;
     }
-    mod_state *state = get_mod_state(self);
     PyObject *result = NULL;
-    if (MultiDict_GetOne(state->capi, args[0], args[1], &result) < 0) {
-        /* -1 */
-        return NULL;
-    }
-    if (result == NULL) {
-        PyErr_SetObject(PyExc_KeyError, args[1]);
-        return NULL;
-    }
-    return result;
+    int ret = MultiDict_GetOne(get_capi(self), args[0], args[1], &result);
+    return handle_reuslt(ret, result);
 }
 
 static PyObject *
 md_getall(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (nargs != 2) {
-        PyErr_SetString(PyExc_TypeError,
-                        "md_getall should be called with md and key");
+    if (check_nargs("md_getall", nargs, 2) < 0){
         return NULL;
     }
-    mod_state *state = get_mod_state(self);
-    PyObject *ret = NULL;
     PyObject *result = NULL;
-    if (MultiDict_GetAll(state->capi, args[0], args[1], &result) < 0) {
-        /* -1 */
-        return NULL;
-    }
-    if (result == NULL) {
-        PyErr_SetObject(PyExc_KeyError, args[1]);
-        return NULL;
-    }
-    return result;
+    int ret = MultiDict_GetAll(get_capi(self), args[0], args[1], &result);
+    return handle_reuslt(ret, result);
 }
 
 static PyObject *
 md_popone(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (nargs != 2) {
-        PyErr_SetString(PyExc_TypeError,
-                        "md_popone should be called with md and key");
+    if (check_nargs("md_popone", nargs, 2) < 0){
         return NULL;
     }
-    mod_state *state = get_mod_state(self);
     PyObject *result = NULL;
-    if (MultiDict_PopOne(state->capi, args[0], args[1], &result) < 0) {
-        /* -1 */
-        return NULL;
-    }
-    if (result == NULL) {
-        PyErr_SetObject(PyExc_KeyError, args[1]);
-        return NULL;
-    }
-    return result;
+    int ret = MultiDict_PopOne(get_capi(self), args[0], args[1], &result);
+    return handle_reuslt(ret, result);
 }
 
 static PyObject *
 md_popall(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (nargs != 2) {
-        PyErr_SetString(PyExc_TypeError,
-                        "md_popone should be called with md and key");
+    if (check_nargs("md_popall", nargs, 2) < 0){
         return NULL;
     }
     mod_state *state = get_mod_state(self);
     PyObject *result = NULL;
-    if (MultiDict_PopAll(state->capi, args[0], args[1], &result) < 0) {
-        /* -1 */
-        return NULL;
-    }
-    if (result == NULL) {
-        PyErr_SetObject(PyExc_KeyError, args[1]);
-        return NULL;
-    }
-    return result;
+    int ret = MultiDict_PopAll(get_capi(self), args[0], args[1], &result);
+    return handle_reuslt(ret, result);
 }
 
 static PyObject *
 md_popitem(PyObject *self, PyObject *arg)
 {
     mod_state *state = get_mod_state(self);
-    PyObject *REF = MultiDict_PopItem(state->capi, arg);
+    PyObject *REF = MultiDict_PopItem(get_capi(self), arg);
     if (REF != NULL) {
         Py_INCREF(REF);
     }
@@ -215,13 +203,11 @@ md_popitem(PyObject *self, PyObject *arg)
 static PyObject *
 md_replace(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (nargs != 3) {
-        PyErr_SetString(PyExc_TypeError,
-                        "md_replace should be called with md, key and value");
+    if (check_nargs("md_replace", nargs, 3) < 0){
         return NULL;
     }
-    mod_state *state = get_mod_state(self);
-    if (MultiDict_Replace(state->capi, args[0], args[1], args[2]) < 0) {
+
+    if (MultiDict_Replace(get_capi(self), args[0], args[1], args[2]) < 0) {
         return NULL;
     }
     Py_RETURN_NONE;
@@ -230,16 +216,12 @@ md_replace(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 static PyObject *
 md_update_from_md(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (nargs != 3) {
-        PyErr_SetString(
-            PyExc_TypeError,
-            "md_update_from_md should be called with md, other, and update");
+    if (check_nargs("md_update_from_md", nargs, 3) < 0){
         return NULL;
     }
-    mod_state *state = get_mod_state(self);
 
     if (MultiDict_UpdateFromMultiDict(
-            state->capi, args[0], args[1], PyBool_As_CBool(args[2])) < 0) {
+            get_capi(self), args[0], args[1], PyObject_IsTrue(args[2])) < 0) {
         return NULL;
     }
     Py_RETURN_NONE;
@@ -248,16 +230,13 @@ md_update_from_md(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 static PyObject *
 md_update_from_dict(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (nargs != 3) {
-        PyErr_SetString(
-            PyExc_TypeError,
-            "md_update_from_dict should be called with md, other, and update");
+    if (check_nargs("md_update_from_dict", nargs, 3) < 0){
         return NULL;
     }
     mod_state *state = get_mod_state(self);
 
     if (MultiDict_UpdateFromDict(
-            state->capi, args[0], args[1], PyBool_As_CBool(args[2])) < 0) {
+            get_capi(self), args[0], args[1], PyObject_IsTrue(args[2])) < 0) {
         return NULL;
     }
     Py_RETURN_NONE;
@@ -266,15 +245,11 @@ md_update_from_dict(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 static PyObject *
 md_update_from_seq(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (nargs != 3) {
-        PyErr_SetString(
-            PyExc_TypeError,
-            "md_update_from_seq should be called with md, other, and update");
+    if (check_nargs("md_update_from_seq", nargs, 3) < 0){
         return NULL;
     }
-    mod_state *state = get_mod_state(self);
     if (MultiDict_UpdateFromSequence(
-            state->capi, args[0], args[1], PyBool_As_CBool(args[2]))) {
+            get_capi(self), args[0], args[1], PyObject_IsTrue(args[2]))) {
         return NULL;
     };
     Py_RETURN_NONE;
@@ -283,14 +258,11 @@ md_update_from_seq(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 static PyObject *
 md_equals(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (nargs != 2) {
-        PyErr_SetString(PyExc_TypeError,
-                        "md_equals should be called with md and other");
+    if (check_nargs("md_equals", nargs, 2) < 0){
         return NULL;
     }
-    mod_state *state = get_mod_state(self);
 
-    switch (MultiDict_Equals(state->capi, args[0], args[1])) {
+    switch (MultiDict_Equals(get_capi(self), args[0], args[1])) {
         case -1:
             return NULL;
         case 0:
@@ -325,7 +297,7 @@ static PyMethodDef module_methods[] = {
     {"md_new", (PyCFunction)md_new, METH_O},
     {"md_add", (PyCFunction)md_add, METH_FASTCALL},
     {"md_clear", (PyCFunction)md_clear, METH_O},
-    {"md_set_default", (PyCFunction)md_set_default, METH_FASTCALL},
+    {"md_setdefault", (PyCFunction)md_setdefault, METH_FASTCALL},
     {"md_del", (PyCFunction)md_del, METH_FASTCALL},
     {"md_version", (PyCFunction)md_version, METH_O},
     {"md_contains", (PyCFunction)md_contains, METH_FASTCALL},

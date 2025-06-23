@@ -464,9 +464,9 @@ static void
 multidict_tp_dealloc(MultiDictObject *self)
 {
     PyObject_GC_UnTrack(self);
+    md_clear(self);
     Py_TRASHCAN_BEGIN(self, multidict_tp_dealloc)
         PyObject_ClearWeakRefs((PyObject *)self);
-    md_clear(self);
     Py_TYPE(self)->tp_free((PyObject *)self);
     Py_TRASHCAN_END  // there should be no code after this
 }
@@ -1495,7 +1495,7 @@ module_exec(PyObject *mod)
     if (PyModule_AddType(mod, state->ValuesViewType) < 0) {
         goto fail;
     }
-    
+
     PyObject *capsule = new_capsule(state);
     if (capsule == NULL) {
         goto fail;

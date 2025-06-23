@@ -30,11 +30,11 @@ MultiDict_GetType(void* state_)
     return (PyTypeObject*)Py_NewRef(state->MultiDictType);
 }
 
-static PyObject*
-MultiDict_New(void* state_, int prealloc_size)
+static PyObject *
+MultiDict_New(void *state_, int prealloc_size)
 {
-    mod_state* state = (mod_state*)state_;
-    MultiDictObject* md =
+    mod_state *state = (mod_state *)state_;
+    MultiDictObject *md =
         PyObject_GC_New(MultiDictObject, state->MultiDictType);
     if (md == NULL) {
         return NULL;
@@ -44,9 +44,7 @@ MultiDict_New(void* state_, int prealloc_size)
         return NULL;
     }
     PyObject_GC_Track(md);
-    // Do not allow Access violations to this object!!!
-    Py_INCREF(md);
-    return (PyObject*)md;
+    return (PyObject *)md;
 }
 
 static int
@@ -66,10 +64,10 @@ MultiDict_Clear(void* state_, PyObject* self)
 
 static PyObject*
 MultiDict_SetDefault(void* state_, PyObject* self, PyObject* key,
-                     PyObject* value)
+                     PyObject* value, PyObject** result)
 {
     __MULTIDICT_VALIDATION_CHECK(self, state_, NULL);
-    return md_set_default((MultiDictObject*)self, key, value);
+    return md_set_default((MultiDictObject*)self, key, value, result);
 }
 
 static int
