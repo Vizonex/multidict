@@ -830,7 +830,7 @@ fail:
 static inline int
 md_get_all(MultiDictObject *md, PyObject *key, PyObject **ret)
 {
-    // *ret = NULL;
+    *ret = NULL;
 
     md_finder_t finder = {0};
 
@@ -877,11 +877,9 @@ fail:
     return -1;
 }
 
-static inline int
-md_set_default(MultiDictObject *md, PyObject *key, PyObject *value,
-               PyObject **result)
+static inline PyObject *
+md_set_default(MultiDictObject *md, PyObject *key, PyObject *value)
 {
-    *result = NULL;
     PyObject *identity = md_calc_identity(md, key);
     if (identity == NULL) {
         goto fail;
@@ -909,8 +907,7 @@ md_set_default(MultiDictObject *md, PyObject *key, PyObject *value,
         if (tmp > 0) {
             Py_DECREF(identity);
             ASSERT_CONSISTENT(md, false);
-            *result = Py_NewRef(entry->value);
-            return 1;
+            return Py_NewRef(entry->value);
         } else if (tmp < 0) {
             goto fail;
         }
@@ -922,11 +919,10 @@ md_set_default(MultiDictObject *md, PyObject *key, PyObject *value,
 
     Py_DECREF(identity);
     ASSERT_CONSISTENT(md, false);
-    *result = Py_NewRef(value);
-    return 0;
+    return Py_NewRef(value);
 fail:
     Py_XDECREF(identity);
-    return -1;
+    return NULL;
 }
 
 static inline int
