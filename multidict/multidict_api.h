@@ -6,8 +6,8 @@ extern "C" {
 #endif
 
 #include <Python.h>
-#include <stdbool.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #define MultiDict_MODULE_NAME "multidict._multidict"
 #define MultiDict_CAPI_NAME "CAPI"
@@ -33,17 +33,21 @@ typedef struct {
                          PyObject* value);
     int (*MultiDict_Clear)(void* state, PyObject* self);
 
-    int (*MultiDict_SetDefault)(void* state, PyObject* self,
-                                      PyObject* key, PyObject* value, PyObject** result);
+    int (*MultiDict_SetDefault)(void* state, PyObject* self, PyObject* key,
+                                PyObject* value, PyObject** result);
 
     int (*MultiDict_Del)(void* state, PyObject* self, PyObject* key);
     uint64_t (*MultiDict_Version)(void* state, PyObject* self);
 
     int (*MultiDict_Contains)(void* state, PyObject* self, PyObject* key);
-    int (*MultiDict_GetOne)(void *state_, PyObject *self, PyObject *key, PyObject **result);
-    int (*MultiDict_GetAll)(void *state_, PyObject *self, PyObject *key, PyObject **result);
-    int (*MultiDict_PopOne)(void *state_, PyObject *self, PyObject *key, PyObject **result);
-    int (*MultiDict_PopAll)(void *state_, PyObject *self, PyObject *key, PyObject **result);
+    int (*MultiDict_GetOne)(void* state_, PyObject* self, PyObject* key,
+                            PyObject** result);
+    int (*MultiDict_GetAll)(void* state_, PyObject* self, PyObject* key,
+                            PyObject** result);
+    int (*MultiDict_PopOne)(void* state_, PyObject* self, PyObject* key,
+                            PyObject** result);
+    int (*MultiDict_PopAll)(void* state_, PyObject* self, PyObject* key,
+                            PyObject** result);
     PyObject* (*MultiDict_PopItem)(void* state, PyObject* self);
     int (*MultiDict_Replace)(void* state, PyObject* self, PyObject* key,
                              PyObject* value);
@@ -181,8 +185,8 @@ MultiDict_Version(MultiDict_CAPI* api, PyObject* self)
 // /// @param self the multidict to create a positional marker for
 // /// @param pos the positional marker to be created
 // /// @return 0 on success, -1 on failure along with `TypeError` exception
-// being thrown static inline int MultiDict_CreatePosMarker(MultiDict_CAPI* api,
-// PyObject* self, md_pos_t* pos){
+// being thrown static inline int MultiDict_CreatePosMarker(MultiDict_CAPI*
+// api, PyObject* self, md_pos_t* pos){
 //     return api->MultiDict_CreatePosMarker(api->state, self, pos);
 // }
 // static inline int MultiDict_Next(MultiDict_CAPI* api, PyObject* self,
@@ -209,11 +213,11 @@ MultiDict_Contains(MultiDict_CAPI* api, PyObject* self, PyObject* key)
 /// @return returns a default value on success, -1 with `KeyError` or
 /// `TypeError` on failure
 static inline int
-MultiDict_GetOne(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject** result)
+MultiDict_GetOne(MultiDict_CAPI* api, PyObject* self, PyObject* key,
+                 PyObject** result)
 {
     return api->MultiDict_GetOne(api->state, self, key, result);
 }
-
 
 /// @brief Return a list of all values for *key* if *key* is in the
 /// dictionary, else *default*.
@@ -223,11 +227,11 @@ MultiDict_GetOne(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject** 
 /// @return a list of all the values, otherwise NULL on error
 /// raises either `KeyError` or `TypeError`
 static inline int
-MultiDict_GetAll(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject** result)
+MultiDict_GetAll(MultiDict_CAPI* api, PyObject* self, PyObject* key,
+                 PyObject** result)
 {
     return api->MultiDict_GetAll(api->state, self, key, result);
 }
-
 
 /// @brief  If `key` is in the dictionary, remove it and return its the
 /// `first` value, else return `default`.
@@ -237,7 +241,8 @@ MultiDict_GetAll(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject** 
 /// @return object on success, otherwise NULL on error along
 /// with `KeyError` or `TypeError` being raised
 static inline int
-MultiDict_PopOne(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject** result)
+MultiDict_PopOne(MultiDict_CAPI* api, PyObject* self, PyObject* key,
+                 PyObject** result)
 {
     return api->MultiDict_PopOne(api->state, self, key, result);
 }
@@ -249,7 +254,8 @@ MultiDict_PopOne(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject** 
 /// @return list object on success, otherwise NULL, on error and raises either
 /// `KeyError` or `TyperError`
 static inline int
-MultiDict_PopAll(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject** result)
+MultiDict_PopAll(MultiDict_CAPI* api, PyObject* self, PyObject* key,
+                 PyObject** result)
 {
     return api->MultiDict_PopAll(api->state, self, key, result);
 }
