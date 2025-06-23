@@ -489,7 +489,7 @@ The library is also shipped with a C-API, the header files can be compiled using
 
    :param api: Python Capsule Pointer
    :returns: return A CPython `PyTypeObject` is returned as a pointer
-   :retval NULL: if object fails to be obtained
+   :retval NULL: if an exception was raised
 
 
 .. c:function:: static inline int MultiDict_CheckExact(MultiDict_CAPI* api, PyObject* op)
