@@ -26,7 +26,9 @@ get_mod_state(PyObject *mod)
 #define ITEM_SAFETY_SWITCH(FUNC, STATE, ARGS) \
     PyObject* RET = NULL; \
     switch (FUNC(state->capi, args[0], args[1], &RET)){\
-        case -1: return NULL; \
+        case -1: {\
+            return NULL; \
+        }\
         case 0: {\
             PyErr_SetObject(PyExc_KeyError, args[1]);\
             return NULL;\
@@ -166,7 +168,7 @@ md_popone(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
         return NULL;
     }
     mod_state *state = get_mod_state(self);
-    ITEM_SAFETY_SWITCH(MultiDict_PopOne, state, args);
+    ITEM_SAFETY_SWITCH(MultiDict_PopOne, state->capi, args);
 }
 
 static PyObject *

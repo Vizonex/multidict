@@ -22,14 +22,6 @@ extern "C" {
         return ON_FAIL;                                             \
     }
 
-#define __MULTIDICT_SET_NEW_REF_IF_FOUND(FUNC, SELF, KEY, ITEM, RESULT) \
-    if (FUNC((MultiDictObject*)(SELF), (KEY), &(ITEM)) < 0) {           \
-        *RESULT = NULL;                                                 \
-        return 0;                                                       \
-    }                                                                   \
-    *RESULT = Py_NewRef(ITEM);                                          \
-    return 1
-
 #define __MULTIDICT_RETURN_IF_FOUND(FUNC, SELF, KEY, ITEM) \
     if (FUNC((MultiDictObject*)(SELF), (KEY), ITEM) < 0) { \
         return -1;                                         \
@@ -122,7 +114,7 @@ MultiDict_GetOne(void* state_, PyObject* self, PyObject* key,
 
     // TODO: edit md_get_one to return 0 if not found, 1 if found.
     // For now the macro made will suffice...
-    __MULTIDICT_SET_NEW_REF_IF_FOUND(md_get_one, self, key, item, result);
+    __MULTIDICT_RETURN_IF_FOUND(md_get_one, self, key, result);
 }
 
 static int
@@ -139,7 +131,7 @@ MultiDict_PopOne(void* state_, PyObject* self, PyObject* key,
 {
     __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
     PyObject* item = NULL;
-    __MULTIDICT_SET_NEW_REF_IF_FOUND(md_pop_one, self, key, item, result);
+    __MULTIDICT_RETURN_IF_FOUND(md_pop_one, self, key, result);
 }
 
 static int
