@@ -107,7 +107,7 @@ MultiDict_GetOne(void* state_, PyObject* self, PyObject* key,
 
     // TODO: edit md_get_one to return 0 if not found, 1 if found.
     // For now the macro made will suffice...
-    return md_get_one(self, key, result);
+    return md_get_one((MultiDictObject*)self, key, result);
 }
 
 static int
@@ -115,7 +115,7 @@ MultiDict_GetAll(void* state_, PyObject* self, PyObject* key,
                  PyObject** result)
 {
     __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    return md_get_all(self, key, result);
+    return md_get_all((MultiDictObject*)self, key, result);
 }
 
 static int
@@ -124,7 +124,7 @@ MultiDict_PopOne(void* state_, PyObject* self, PyObject* key,
 {
     __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
     PyObject* item = NULL;
-    return md_pop_one(self, key, result);
+    return md_pop_one((MultiDictObject*)self, key, result);
 }
 
 static int
@@ -132,7 +132,7 @@ MultiDict_PopAll(void* state_, PyObject* self, PyObject* key,
                  PyObject** result)
 {
     __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    return md_pop_all(self, key, result);
+    return md_pop_all((MultiDictObject*)self, key, result);
 }
 
 static PyObject*
