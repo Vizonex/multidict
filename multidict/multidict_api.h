@@ -225,7 +225,7 @@ MultiDict_GetOne(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject** 
 static inline int
 MultiDict_GetAll(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject** result)
 {
-    return api->MultiDict_GetAll(api, self, key, result);
+    return api->MultiDict_GetAll(api->state, self, key, result);
 }
 
 

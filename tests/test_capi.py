@@ -66,14 +66,18 @@ def test_md_contains() -> None:
 
 
 def test_md_get_all() -> None:
-    d = multidict.MultiDict([("key", "value1")], key="value2")
-    assert testcapi.md_get_all(d, "key") == ["value1", "value2"]
+    d: MultiDictStr = multidict.MultiDict()
 
+    d.add("key1", "val1")
+    d.add("key2", "val2")
+    d.add("key1", "val3")
+    ret = testcapi.md_getall(d, "key1")
+    assert ["val1", "val3"] == ret
 
 def test_md_get_all_excpection() -> None:
     d = multidict.MultiDict([("key", "value1")], key="value2")
     with pytest.raises(KeyError, match="some_key"):
-        testcapi.md_get_all(d, "some_key")
+        testcapi.md_getall(d, "some_key")
 
 
 def test_md_pop() -> None:
@@ -81,7 +85,7 @@ def test_md_pop() -> None:
     d.add("key", "val1")
     d.add("key", "val2")
 
-    assert "val1" == testcapi.md_pop(d, "key")
+    assert "val1" == testcapi.md_popone(d, "key")
     assert {"key": "val2"} == d
 
 

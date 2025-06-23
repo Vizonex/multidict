@@ -153,12 +153,8 @@ md_getall(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
         return NULL;
     }
     mod_state *state = get_mod_state(self);
-    PyObject* RET = NULL;
-    if (MultiDict_GetAll(state->capi, args[0], args[1], &RET) <= 0){
-        PyErr_SetObject(PyExc_KeyError, args[1]); 
-        return NULL;
-    }
-    return RET;
+    PyObject* ret = NULL;
+    ITEM_SAFETY_SWITCH(MultiDict_GetAll, state->capi, args);
 }
 
 static PyObject *

@@ -15,10 +15,10 @@ extern "C" {
 // NOTE: MACROS WITH '__' ARE INTERNAL METHODS,
 // PLEASE DON'T USE IN OTHER PROJECTS!!!
 
-#define __MULTIDICT_VALIDATION_CHECK(OBJECT, STATE, ON_FAIL)        \
-    if (MultiDict_Check(((mod_state*)STATE), (self)) <= 0) {        \
-        PyErr_SetString(PyExc_TypeError,                            \
-                        #OBJECT " should be a MultiDict instance"); \
+#define __MULTIDICT_VALIDATION_CHECK(SELF, STATE, ON_FAIL)        \
+    if (MultiDict_Check(((mod_state*)STATE), (SELF)) <= 0) {        \
+        PyErr_Format(PyExc_TypeError,                            \
+                        #SELF " should be a MultiDict instance not %s", Py_TYPE(SELF)->tp_name); \
         return ON_FAIL;                                             \
     }
 
@@ -80,7 +80,7 @@ MultiDict_Clear(void* state_, PyObject* self)
 static int
 MultiDict_SetDefault(void* state_, PyObject* self, PyObject *key, PyObject *value, PyObject **result)
 {
-    PyObject* result = NULL;
+    *result = NULL;
     __MULTIDICT_VALIDATION_CHECK(self, state_, NULL);
     return md_set_default((MultiDictObject*)self, key, value, result);
 }
