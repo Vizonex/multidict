@@ -23,8 +23,6 @@ extern "C" {
         return ON_FAIL;                                              \
     }
 
-
-
 static PyTypeObject*
 MultiDict_GetType(void* state_)
 {
@@ -66,13 +64,12 @@ MultiDict_Clear(void* state_, PyObject* self)
     return md_clear((MultiDictObject*)self);
 }
 
-static int
+static PyObject*
 MultiDict_SetDefault(void* state_, PyObject* self, PyObject* key,
-                     PyObject* value, PyObject** result)
+                     PyObject* value)
 {
-    *result = NULL;
     __MULTIDICT_VALIDATION_CHECK(self, state_, NULL);
-    return md_set_default((MultiDictObject*)self, key, value, result);
+    return md_set_default((MultiDictObject*)self, key, value);
 }
 
 static int

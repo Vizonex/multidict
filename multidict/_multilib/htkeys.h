@@ -219,7 +219,7 @@ calculate_log2_keysize(Py_ssize_t minsize)
     uint8_t log2_size;
     for (log2_size = HT_LOG_MINSIZE; (((Py_ssize_t)1) << log2_size) < minsize;
          log2_size++)
-    ;
+        ;
     return log2_size;
 #endif
 }

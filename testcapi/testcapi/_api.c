@@ -23,20 +23,6 @@ get_mod_state(PyObject *mod)
     }                               \
     return REF
 
-#define ITEM_SAFETY_SWITCH(FUNC, STATE, ARGS)            \
-    PyObject *RET = NULL;                                \
-    switch (FUNC(state->capi, args[0], args[1], &RET)) { \
-        case -1: {                                       \
-            return NULL;                                 \
-        }                                                \
-        case 0: {                                        \
-            PyErr_SetObject(PyExc_KeyError, args[1]);    \
-            return NULL;                                 \
-        }                                                \
-        case 1:                                          \
-            return RET;                                  \
-    }
-
 /* module functions */
 
 static PyObject *
@@ -89,11 +75,7 @@ md_set_default(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
     }
     mod_state *state = get_mod_state(self);
     PyObject *result;
-    if (Multidict_SetDefault(state->capi, args[0], args[1], args[2], &result) <
-        0) {
-        return NULL;
-    };
-    return result;
+    return Multidict_SetDefault(state->capi, args[0], args[1], args[2]);
 }
 
 static PyObject *
@@ -143,7 +125,16 @@ md_getone(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
         return NULL;
     }
     mod_state *state = get_mod_state(self);
-    ITEM_SAFETY_SWITCH(MultiDict_GetOne, state, args);
+    PyObject *result = NULL;
+    if (MultiDict_GetOne(state->capi, args[0], args[1], &result) < 0) {
+        /* -1 */
+        return NULL;
+    }
+    if (result == NULL) {
+        PyErr_SetObject(PyExc_KeyError, args[1]);
+        return NULL;
+    }
+    return result;
 }
 
 static PyObject *
@@ -156,7 +147,16 @@ md_getall(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
     }
     mod_state *state = get_mod_state(self);
     PyObject *ret = NULL;
-    ITEM_SAFETY_SWITCH(MultiDict_GetAll, state->capi, args);
+    PyObject *result = NULL;
+    if (MultiDict_GetAll(state->capi, args[0], args[1], &result) < 0) {
+        /* -1 */
+        return NULL;
+    }
+    if (result == NULL) {
+        PyErr_SetObject(PyExc_KeyError, args[1]);
+        return NULL;
+    }
+    return result;
 }
 
 static PyObject *
@@ -168,7 +168,16 @@ md_popone(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
         return NULL;
     }
     mod_state *state = get_mod_state(self);
-    ITEM_SAFETY_SWITCH(MultiDict_PopOne, state->capi, args);
+    PyObject *result = NULL;
+    if (MultiDict_PopOne(state->capi, args[0], args[1], &result) < 0) {
+        /* -1 */
+        return NULL;
+    }
+    if (result == NULL) {
+        PyErr_SetObject(PyExc_KeyError, args[1]);
+        return NULL;
+    }
+    return result;
 }
 
 static PyObject *
@@ -180,12 +189,16 @@ md_popall(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
         return NULL;
     }
     mod_state *state = get_mod_state(self);
-    PyObject *RET = NULL;
-    if (MultiDict_PopAll(state->capi, args[0], args[1], &RET) <= 0) {
+    PyObject *result = NULL;
+    if (MultiDict_PopAll(state->capi, args[0], args[1], &result) < 0) {
+        /* -1 */
+        return NULL;
+    }
+    if (result == NULL) {
         PyErr_SetObject(PyExc_KeyError, args[1]);
         return NULL;
     }
-    return RET;
+    return result;
 }
 
 static PyObject *
