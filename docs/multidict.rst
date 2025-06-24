@@ -574,8 +574,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :param api: Python Capsule Pointer
    :param self: the :class:`MultiDict` object
    :param key: the key to get one item from
-   :param result: the object to attached the 
-   obtained object to.
+   :param result: the object to attached the obtained object to.
    :retval 1: on success
    :retval 0: on failure (No exceptions are raised)
    :retval -1: on :exc:`TypeError` raised
