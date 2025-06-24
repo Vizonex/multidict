@@ -1,11 +1,7 @@
-armv
 aarch64
-i686
-ppc64le
-s390x
-x86_64
 aiohttp
 args
+armv
 async
 autocalculated
 autodetection
@@ -25,9 +21,9 @@ css
 ctor
 Ctrl
 cython
-Deprecations
 deallocation
 decrementation
+Deprecations
 dev
 dict
 docstrings
@@ -42,6 +38,7 @@ github
 google
 gunicorn
 Gunicorn
+i686
 Indices
 inplace
 ionaries
@@ -74,6 +71,7 @@ params
 performant
 pickable
 pickleable
+ppc64le
 pre
 proxied
 pyenv
@@ -84,8 +82,10 @@ refactored
 regex
 regexs
 repo
+retval
 runtime
 runtimes
+s390x
 str
 subclassable
 subclassed
@@ -109,3 +109,4 @@ Websockets
 wildcard
 Workflow
 wsgi
+x86_64

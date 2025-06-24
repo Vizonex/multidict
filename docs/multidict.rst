@@ -485,7 +485,7 @@ The library is also shipped with a C-API, the header files can be compiled using
 
 .. c:function:: static inline PyTypeObject* MultiDict_GetType(MultiDict_CAPI* api)
    
-   Obtains the Multidict TypeObject.
+   Obtains the :class:`MultiDict` TypeObject.
 
    :param api: Python Capsule Pointer
    :returns: return A CPython `PyTypeObject` is returned as a pointer
@@ -494,7 +494,7 @@ The library is also shipped with a C-API, the header files can be compiled using
 
 .. c:function:: static inline int MultiDict_CheckExact(MultiDict_CAPI* api, PyObject* op)
 
-   Checks if Multidict Object Type Matches Exactly.
+   Checks if :class:`MultiDict` object type matches exactly.
 
    :param api: Python Capsule Pointer
    :param op: The Object to check
@@ -515,7 +515,7 @@ The library is also shipped with a C-API, the header files can be compiled using
 
 .. c:function:: static inline int MultiDict_Clear(MultiDict_CAPI* api, PyObject* self)
 
-   Clears a multidict object and removes all it's entries.
+   Clears a :class:`MultiDict` object and removes all it's entries.
 
    :param api: Python Capsule Pointer
    :param self: the :class:`MultiDict` object
@@ -548,7 +548,7 @@ The library is also shipped with a C-API, the header files can be compiled using
 
 .. c:function:: static uint64_t MultiDict_Version(MultiDict_CAPI* api, PyObject* self)
    
-   Return a version of given mdict object
+   Return a version of given :class:`MultiDict` object
 
    :param api: Python Capsule Pointer
    :param self: the mdict object
@@ -563,7 +563,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :param key: the key to look for
    :retval 1: if true
    :retval 0: if false, 
-   :retval -1: if failure had occured
+   :retval -1: if failure had occurred
 
 
 .. c:function:: static inline PyObject* MultiDict_GetOne(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject** result)
@@ -576,7 +576,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :param key: the key to get one item from
    :param result: the object to attached the 
    obainted object to.
-   :retval 1: on sucess
+   :retval 1: on success
    :retval 0: on failure (No exceptions are raised)
    :retval -1: on :exc:`TypeError` raised
 
@@ -612,7 +612,7 @@ The library is also shipped with a C-API, the header files can be compiled using
 
    :param api: Python Capsule Pointer
    :param self: the :class:`MultiDict` object
-   :returns: an arbitray tuple on success
+   :returns: an arbitrary tuple on success
    :retval NULL: on error along with :exc:`TypeError` or :exc:`KeyError` raised
 
 
@@ -624,7 +624,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :param self: the :class:`MultiDict` object
    :param key: the key to lookup for replacement
    :param value: the value to replace with
-   :retval 0: on sucess
+   :retval 0: on success
    :retval -1: on failure and raises :exc:`TypeError`
 
 
@@ -636,7 +636,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :param self: the :class:`MultiDict` object
    :param other: a multidict object to update corresponding object with
    :param update: if true append references and stack them, otherwise steal all references.
-   :retval 0: on sucess 
+   :retval 0: on success 
    :retval -1: on failure
 
 
@@ -649,7 +649,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :param self: the :class:`MultiDict` object
    :param kwds: the keywords or Dictionary object to merge
    :param update: if true append references and stack them, otherwise steal all references.
-   :retval 0: on sucess 
+   :retval 0: on success 
    :retval -1: on failure
 
 
@@ -661,7 +661,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :param self: the :class:`MultiDict` object
    :param seq: the sequence to merge with.
    :param update: if true append references and stack them, otherwise steal all references.
-   :retval 0: on sucess 
+   :retval 0: on success 
    :retval -1: on failure
 
 
@@ -674,6 +674,5 @@ The library is also shipped with a C-API, the header files can be compiled using
    :param other: the corresponding object to check against
    :retval 1: if true 
    :retval 0: if false
-   :retval -1: if failue occured follwed by raising a :exc:`TypeError`
-
+   :retval -1: if failure occurred followed by raising a :exc:`TypeError`
 
