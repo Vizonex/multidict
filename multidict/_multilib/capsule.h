@@ -30,11 +30,11 @@ MultiDict_GetType(void* state_)
     return (PyTypeObject*)Py_NewRef(state->MultiDictType);
 }
 
-static PyObject *
-MultiDict_New(void *state_, int prealloc_size)
+static PyObject*
+MultiDict_New(void* state_, int prealloc_size)
 {
-    mod_state *state = (mod_state *)state_;
-    MultiDictObject *md =
+    mod_state* state = (mod_state*)state_;
+    MultiDictObject* md =
         PyObject_GC_New(MultiDictObject, state->MultiDictType);
     if (md == NULL) {
         return NULL;
@@ -44,7 +44,7 @@ MultiDict_New(void *state_, int prealloc_size)
         return NULL;
     }
     PyObject_GC_Track(md);
-    return (PyObject *)md;
+    return (PyObject*)md;
 }
 
 static int

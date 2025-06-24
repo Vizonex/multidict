@@ -33,9 +33,9 @@ typedef struct {
                          PyObject* value);
     int (*MultiDict_Clear)(void* state, PyObject* self);
 
-    int (*MultiDict_SetDefault)(void *state, PyObject *self, PyObject *key, 
-        PyObject *default_, PyObject **result);
-    
+    int (*MultiDict_SetDefault)(void* state, PyObject* self, PyObject* key,
+                                PyObject* default_, PyObject** result);
+
     int (*MultiDict_Del)(void* state, PyObject* self, PyObject* key);
     uint64_t (*MultiDict_Version)(void* state, PyObject* self);
 
@@ -150,8 +150,8 @@ MultiDict_Clear(MultiDict_CAPI* api, PyObject* self)
 /// @param _default the default value to have inserted
 /// @return default on success, NULL on failure
 static inline int
-MultiDict_SetDefault(MultiDict_CAPI *api, PyObject *self, PyObject *key,
-                     PyObject *default_, PyObject **result)
+MultiDict_SetDefault(MultiDict_CAPI* api, PyObject* self, PyObject* key,
+                     PyObject* default_, PyObject** result)
 {
     return api->MultiDict_SetDefault(api->state, self, key, default_, result);
 }

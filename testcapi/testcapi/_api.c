@@ -14,8 +14,9 @@ get_mod_state(PyObject *mod)
     return state;
 }
 
-static inline MultiDict_CAPI* 
-get_capi(PyObject* mod){
+static inline MultiDict_CAPI *
+get_capi(PyObject *mod)
+{
     return get_mod_state(mod)->capi;
 }
 
@@ -33,16 +34,18 @@ check_nargs(const char *name, Py_ssize_t nargs, Py_ssize_t required)
     return 0;
 }
 
-// Took the most repetative part and put it right here to help 
+// Took the most repetative part and put it right here to help
 // you can get rid of this comment before the pr is finished,
 // Using a function was less confusing here than a macro - Vizonex
 
-static PyObject* handle_reuslt(int ret, PyObject* result){
+static PyObject *
+handle_reuslt(int ret, PyObject *result)
+{
     if (ret < 0) {
         return NULL;
     }
-    // Test if we missed 
-    if (ret == 0){
+    // Test if we missed
+    if (ret == 0) {
         return PyTuple_Pack(2, Py_None, Py_False);
     }
     assert(result != NULL);
@@ -66,8 +69,8 @@ md_type(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 }
 
 static PyObject *
-md_new(PyObject *self, PyObject* arg)
-{   
+md_new(PyObject *self, PyObject *arg)
+{
     long prealloc_size = PyLong_AsLong(arg);
     if (prealloc_size < 0) {
         if (!PyErr_Occurred()) {
@@ -107,7 +110,8 @@ md_setdefault(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
         return NULL;
     }
     PyObject *result = NULL;
-    int ret = MultiDict_SetDefault(get_capi(self), args[0], args[1], args[2], &result);
+    int ret = MultiDict_SetDefault(
+        get_capi(self), args[0], args[1], args[2], &result);
     return handle_reuslt(ret, result);
 }
 
@@ -116,7 +120,7 @@ md_del(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
     // handle this check first so that there's an immediate exit
     // rather than waiting for the state to be obtained
-    if (check_nargs("md_del", nargs, 2) < 0){
+    if (check_nargs("md_del", nargs, 2) < 0) {
         return NULL;
     }
     if ((MutliDict_Del(get_capi(self), args[0], args[1])) < 0) {
@@ -134,7 +138,7 @@ md_version(PyObject *self, PyObject *arg)
 static PyObject *
 md_contains(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (check_nargs("md_contains", nargs, 2) < 0){
+    if (check_nargs("md_contains", nargs, 2) < 0) {
         return NULL;
     }
     int ret = MultiDict_Contains(get_capi(self), args[0], args[1]);
@@ -147,7 +151,7 @@ md_contains(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 static PyObject *
 md_getone(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (check_nargs("md_getone", nargs, 2) < 0){
+    if (check_nargs("md_getone", nargs, 2) < 0) {
         return NULL;
     }
     PyObject *result = NULL;
@@ -158,7 +162,7 @@ md_getone(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 static PyObject *
 md_getall(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (check_nargs("md_getall", nargs, 2) < 0){
+    if (check_nargs("md_getall", nargs, 2) < 0) {
         return NULL;
     }
     PyObject *result = NULL;
@@ -169,7 +173,7 @@ md_getall(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 static PyObject *
 md_popone(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (check_nargs("md_popone", nargs, 2) < 0){
+    if (check_nargs("md_popone", nargs, 2) < 0) {
         return NULL;
     }
     PyObject *result = NULL;
@@ -180,7 +184,7 @@ md_popone(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 static PyObject *
 md_popall(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (check_nargs("md_popall", nargs, 2) < 0){
+    if (check_nargs("md_popall", nargs, 2) < 0) {
         return NULL;
     }
     mod_state *state = get_mod_state(self);
@@ -203,7 +207,7 @@ md_popitem(PyObject *self, PyObject *arg)
 static PyObject *
 md_replace(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (check_nargs("md_replace", nargs, 3) < 0){
+    if (check_nargs("md_replace", nargs, 3) < 0) {
         return NULL;
     }
 
@@ -216,7 +220,7 @@ md_replace(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 static PyObject *
 md_update_from_md(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (check_nargs("md_update_from_md", nargs, 3) < 0){
+    if (check_nargs("md_update_from_md", nargs, 3) < 0) {
         return NULL;
     }
 
@@ -230,7 +234,7 @@ md_update_from_md(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 static PyObject *
 md_update_from_dict(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (check_nargs("md_update_from_dict", nargs, 3) < 0){
+    if (check_nargs("md_update_from_dict", nargs, 3) < 0) {
         return NULL;
     }
     mod_state *state = get_mod_state(self);
@@ -245,7 +249,7 @@ md_update_from_dict(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 static PyObject *
 md_update_from_seq(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (check_nargs("md_update_from_seq", nargs, 3) < 0){
+    if (check_nargs("md_update_from_seq", nargs, 3) < 0) {
         return NULL;
     }
     if (MultiDict_UpdateFromSequence(
@@ -258,7 +262,7 @@ md_update_from_seq(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 static PyObject *
 md_equals(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
-    if (check_nargs("md_equals", nargs, 2) < 0){
+    if (check_nargs("md_equals", nargs, 2) < 0) {
         return NULL;
     }
 
