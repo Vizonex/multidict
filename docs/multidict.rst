@@ -467,7 +467,7 @@ The library is also shipped with a C-API, the header files can be compiled using
 
 .. c:struct:: MultiDict_CAPI
    
-   Simillar to the way `Numpy <https://numpy.org/doc/stable/reference/c-api/index.html>`_ and `Datetime <https://docs.python.org/3/c-api/datetime.html>`_ work. multidict utilizes a 
+   Similar to the way `Numpy <https://numpy.org/doc/stable/reference/c-api/index.html>`_ and `Datetime <https://docs.python.org/3/c-api/datetime.html>`_ work. multidict utilizes a 
    `Python Capsule <https://docs.python.org/3/c-api/capsule.html#>`_ to expose the CAPI to other low level projects. 
 
    .. c:var:: void* state;
@@ -543,7 +543,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :param self: the :class:`MultiDict` object
    :param key: the key to be removed
    :retval 0: on success, 
-   :retval -1: on failure followed by rasing either :exc:`TypeError` or :exc:`KeyError` if key is not in the map.
+   :retval -1: on failure followed by raising either :exc:`TypeError` or :exc:`KeyError` if key is not in the map.
 
 
 .. c:function:: static uint64_t MultiDict_Version(MultiDict_CAPI* api, PyObject* self)
@@ -551,7 +551,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    Return a version of given :class:`MultiDict` object
 
    :param api: Python Capsule Pointer
-   :param self: the mdict object
+   :param self: the :class:`MultiDict` object
    :returns: the version flag of the object, otherwise 0 on failure
 
 .. c:function:: static int MultiDict_Contains(MultiDict_CAPI* api, PyObject* self, PyObject* key)
@@ -575,7 +575,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :param self: the :class:`MultiDict` object
    :param key: the key to get one item from
    :param result: the object to attached the 
-   obainted object to.
+   obtained object to.
    :retval 1: on success
    :retval 0: on failure (No exceptions are raised)
    :retval -1: on :exc:`TypeError` raised
