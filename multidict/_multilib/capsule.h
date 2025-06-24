@@ -66,7 +66,7 @@ static int
 MultiDict_SetDefault(void* state_, PyObject* self, PyObject* key,
                      PyObject* value, PyObject** result)
 {
-    __MULTIDICT_VALIDATION_CHECK(self, state_, NULL);
+    __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
     return md_set_default((MultiDictObject*)self, key, value, result);
 }
 
