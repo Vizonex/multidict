@@ -62,7 +62,7 @@ MultiDict_Clear(void* state_, PyObject* self)
     return md_clear((MultiDictObject*)self);
 }
 
-static PyObject*
+static int
 MultiDict_SetDefault(void* state_, PyObject* self, PyObject* key,
                      PyObject* value, PyObject** result)
 {
