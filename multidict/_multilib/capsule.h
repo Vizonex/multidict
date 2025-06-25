@@ -34,8 +34,8 @@ static PyObject*
 MultiDict_New(void* state_, int prealloc_size)
 {
     mod_state* state = (mod_state*)state_;
-    MultiDictObject* md =
-        state->MultiDictType->tp_alloc(state->MultiDictType, 0);
+    MultiDictObject* md = (MultiDictObject*)state->MultiDictType->tp_alloc(
+        state->MultiDictType, 0);
 
     if (md == NULL) {
         return NULL;
