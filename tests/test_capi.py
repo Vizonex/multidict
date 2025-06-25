@@ -42,14 +42,6 @@ def test_md_del() -> None:
         testcapi.md_del(d, "key")
 
 
-def test_md_equals() -> None:
-    d: MultiDictStr = multidict.MultiDict([("key", "val1")])
-    assert testcapi.md_equals(d, multidict.MultiDict([("key", "val1")]))
-    assert not testcapi.md_equals(d, multidict.MultiDict([("key", "val2")]))
-    assert testcapi.md_equals(d, {"key": "val1"})
-    assert not testcapi.md_equals(d, {"key": "not it"})
-
-
 def test_md_get_all() -> None:
     d: MultiDictStr = multidict.MultiDict()
     d.add("key1", "val1")

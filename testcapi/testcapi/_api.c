@@ -259,23 +259,6 @@ md_update_from_seq(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
     Py_RETURN_NONE;
 }
 
-static PyObject *
-md_equals(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
-{
-    if (check_nargs("md_equals", nargs, 2) < 0) {
-        return NULL;
-    }
-
-    switch (MultiDict_Equals(get_capi(self), args[0], args[1])) {
-        case -1:
-            return NULL;
-        case 0:
-            Py_RETURN_FALSE;
-        default:
-            Py_RETURN_TRUE;
-    }
-}
-
 /* module slots */
 
 static int
@@ -314,7 +297,6 @@ static PyMethodDef module_methods[] = {
     {"md_update_from_md", (PyCFunction)md_update_from_md, METH_FASTCALL},
     {"md_update_from_dict", (PyCFunction)md_update_from_dict, METH_FASTCALL},
     {"md_update_from_seq", (PyCFunction)md_update_from_seq, METH_FASTCALL},
-    {"md_equals", (PyCFunction)md_equals, METH_FASTCALL},
     {NULL, NULL} /* sentinel */
 };
 

@@ -174,19 +174,6 @@ MultiDict_UpdateFromSequence(void* state_, PyObject* self, PyObject* seq,
     return md_update_from_seq((MultiDictObject*)self, seq, update);
 }
 
-static int
-MultiDict_Equals(void* state_, PyObject* self, PyObject* other)
-{
-    __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    if (MultiDict_Check(((mod_state*)state_), other)) {
-        return md_eq((MultiDictObject*)self, (MultiDictObject*)other);
-    }
-    if (PyMapping_Check(other)) {
-        return md_eq_to_mapping((MultiDictObject*)self, other);
-    }
-    return 0;
-}
-
 static void
 capsule_free(MultiDict_CAPI* capi)
 {
@@ -227,7 +214,6 @@ new_capsule(mod_state* state)
     capi->MultiDict_UpdateFromMultiDict = MultiDict_UpdateFromMultiDict;
     capi->MultiDict_UpdateFromDict = MultiDict_UpdateFromDict;
     capi->MultiDict_UpdateFromSequence = MultiDict_UpdateFromSequence;
-    capi->MultiDict_Equals = MultiDict_Equals;
 
     PyObject* ret =
         PyCapsule_New(capi, MultiDict_CAPSULE_NAME, capsule_destructor);

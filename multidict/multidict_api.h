@@ -57,7 +57,6 @@ typedef struct {
                                     PyObject* kwds, bool update);
     int (*MultiDict_UpdateFromSequence)(void* state, PyObject* self,
                                         PyObject* kwds, bool update);
-    int (*MultiDict_Equals)(void* state, PyObject* self, PyObject* other);
 
 } MultiDict_CAPI;
 
@@ -326,19 +325,6 @@ MultiDict_UpdateFromSequence(MultiDict_CAPI* api, PyObject* self,
                              PyObject* seq, bool update)
 {
     return api->MultiDict_UpdateFromSequence(api->state, self, seq, update);
-};
-
-/// @brief Checks to see if a multidict matches another dictionary or multidict
-/// object
-/// @param api Python Capsule Pointer
-/// @param self the multidict object
-/// @param other the corresponding object to check against
-/// @return 1 if true, 0 if false, -1 if failue occured follwed by raising a
-/// TypeError
-static inline int
-MultiDict_Equals(MultiDict_CAPI* api, PyObject* self, PyObject* other)
-{
-    return api->MultiDict_Equals(api->state, self, other);
 };
 
 #endif
