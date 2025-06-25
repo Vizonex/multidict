@@ -39,7 +39,7 @@ check_nargs(const char *name, Py_ssize_t nargs, Py_ssize_t required)
 // Using a function was less confusing here than a macro - Vizonex
 
 static PyObject *
-handle_reuslt(int ret, PyObject *result)
+handle_result(int ret, PyObject *result)
 {
     if (ret < 0) {
         return NULL;
