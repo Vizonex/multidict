@@ -39,7 +39,7 @@ check_nargs(const char *name, Py_ssize_t nargs, Py_ssize_t required)
 // Using a function was less confusing here than a macro - Vizonex
 
 static PyObject *
-handle_result(int ret, PyObject *result)
+capi_handle_result(int ret, PyObject *result)
 {
     if (ret < 0) {
         return NULL;
@@ -112,7 +112,7 @@ md_setdefault(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
     PyObject *result = NULL;
     int ret = MultiDict_SetDefault(
         get_capi(self), args[0], args[1], args[2], &result);
-    return handle_reuslt(ret, result);
+    return capi_handle_result(ret, result);
 }
 
 static PyObject *
@@ -156,7 +156,7 @@ md_getone(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
     }
     PyObject *result = NULL;
     int ret = MultiDict_GetOne(get_capi(self), args[0], args[1], &result);
-    return handle_reuslt(ret, result);
+    return capi_handle_result(ret, result);
 }
 
 static PyObject *
@@ -167,7 +167,7 @@ md_getall(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
     }
     PyObject *result = NULL;
     int ret = MultiDict_GetAll(get_capi(self), args[0], args[1], &result);
-    return handle_reuslt(ret, result);
+    return capi_handle_result(ret, result);
 }
 
 static PyObject *
@@ -178,7 +178,7 @@ md_popone(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
     }
     PyObject *result = NULL;
     int ret = MultiDict_PopOne(get_capi(self), args[0], args[1], &result);
-    return handle_reuslt(ret, result);
+    return capi_handle_result(ret, result);
 }
 
 static PyObject *
@@ -190,7 +190,7 @@ md_popall(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
     mod_state *state = get_mod_state(self);
     PyObject *result = NULL;
     int ret = MultiDict_PopAll(get_capi(self), args[0], args[1], &result);
-    return handle_reuslt(ret, result);
+    return capi_handle_result(ret, result);
 }
 
 static PyObject *
