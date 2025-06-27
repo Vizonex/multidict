@@ -7,21 +7,24 @@ extern "C" {
 
 #define MULTIDICT_IMPL
 
+#include <stdbool.h>
+
 #include "../multidict_api.h"
 #include "dict.h"
 #include "hashtable.h"
 #include "state.h"
 
-// NOTE: MACROS WITH '__' ARE INTERNAL METHODS,
-// PLEASE DON'T USE IN OTHER PROJECTS!!!
-
-#define __MULTIDICT_VALIDATION_CHECK(SELF, STATE, ON_FAIL)           \
-    if (MultiDict_Check(((mod_state*)STATE), (SELF)) <= 0) {         \
-        PyErr_Format(PyExc_TypeError,                                \
-                     #SELF " should be a MultiDict instance not %s", \
-                     Py_TYPE(SELF)->tp_name);                        \
-        return ON_FAIL;                                              \
+static int
+MultiDict_CheckOrException(void* state_, PyObject* self)
+{
+    if (!(MultiDict_Check(((mod_state*)state_), self))) {
+        PyErr_Format(PyExc_TypeError,
+                     "object should be a MultiDict instance not %s",
+                     Py_TYPE(self)->tp_name);
+        return 0;
     }
+    return 1;
+}
 
 static PyTypeObject*
 MultiDict_GetType(void* state_)
@@ -50,45 +53,50 @@ MultiDict_New(void* state_, int prealloc_size)
 static int
 MultiDict_Add(void* state_, PyObject* self, PyObject* key, PyObject* value)
 {
-    __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    return md_add((MultiDictObject*)self, key, value);
+    return MultiDict_CheckOrException(state_, self)
+               ? -1
+               : md_add((MultiDictObject*)self, key, value);
 }
 
 static int
 MultiDict_Clear(void* state_, PyObject* self)
 {
     // TODO: Macro for repeated steps being done?
-    __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    return md_clear((MultiDictObject*)self);
+    return MultiDict_CheckOrException(state_, self)
+               ? -1
+               : md_clear((MultiDictObject*)self);
 }
 
 static int
 MultiDict_SetDefault(void* state_, PyObject* self, PyObject* key,
                      PyObject* value, PyObject** result)
 {
-    __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    return md_set_default((MultiDictObject*)self, key, value, result);
+    return MultiDict_CheckOrException(state_, self)
+               ? -1
+               : md_set_default((MultiDictObject*)self, key, value, result);
 }
 
 static int
 MultiDict_Del(void* state_, PyObject* self, PyObject* key)
 {
-    __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    return md_del((MultiDictObject*)self, key);
+    return MultiDict_CheckOrException(state_, self)
+               ? -1
+               : md_del((MultiDictObject*)self, key);
 }
 
 static uint64_t
 MultiDict_Version(void* state_, PyObject* self)
 {
-    __MULTIDICT_VALIDATION_CHECK(self, state_, 0);
-    return md_version((MultiDictObject*)self);
+    return MultiDict_CheckOrException(state_, self) &&
+           md_version((MultiDictObject*)self);
 }
 
 static int
 MultiDict_Contains(void* state_, PyObject* self, PyObject* key)
 {
-    __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    return md_contains((MultiDictObject*)self, key, NULL);
+    return MultiDict_CheckOrException(state_, self)
+               ? -1
+               : md_contains((MultiDictObject*)self, key, NULL);
 };
 
 // Suggestion: Would be smart in to do what python does and provide
@@ -101,76 +109,81 @@ static int
 MultiDict_GetOne(void* state_, PyObject* self, PyObject* key,
                  PyObject** result)
 {
-    __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-
-    // TODO: edit md_get_one to return 0 if not found, 1 if found.
-    // For now the macro made will suffice...
-    return md_get_one((MultiDictObject*)self, key, result);
+    return MultiDict_CheckOrException(state_, self)
+               ? -1
+               : md_get_one((MultiDictObject*)self, key, result);
 }
 
 static int
 MultiDict_GetAll(void* state_, PyObject* self, PyObject* key,
                  PyObject** result)
 {
-    __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    return md_get_all((MultiDictObject*)self, key, result);
+    return MultiDict_CheckOrException(state_, self)
+               ? -1
+               : md_get_all((MultiDictObject*)self, key, result);
 }
 
 static int
 MultiDict_PopOne(void* state_, PyObject* self, PyObject* key,
                  PyObject** result)
 {
-    __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    PyObject* item = NULL;
-    return md_pop_one((MultiDictObject*)self, key, result);
+    return MultiDict_CheckOrException(state_, self)
+               ? -1
+               : md_pop_one((MultiDictObject*)self, key, result);
 }
 
 static int
 MultiDict_PopAll(void* state_, PyObject* self, PyObject* key,
                  PyObject** result)
 {
-    __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    return md_pop_all((MultiDictObject*)self, key, result);
+    return MultiDict_CheckOrException(state_, self)
+               ? -1
+               : md_pop_all((MultiDictObject*)self, key, result);
 }
 
 static PyObject*
 MultiDict_PopItem(void* state_, PyObject* self)
 {
-    __MULTIDICT_VALIDATION_CHECK(self, state_, NULL);
-    return md_pop_item((MultiDictObject*)self);
+    return MultiDict_CheckOrException(state_, self)
+               ? NULL
+               : md_pop_item((MultiDictObject*)self);
 }
 
 static int
 MultiDict_Replace(void* state_, PyObject* self, PyObject* key, PyObject* value)
 {
-    __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    return md_replace((MultiDictObject*)self, key, value);
+    return MultiDict_CheckOrException(state_, self)
+               ? -1
+               : md_replace((MultiDictObject*)self, key, value);
 }
 
 static int
 MultiDict_UpdateFromMultiDict(void* state_, PyObject* self, PyObject* other,
                               bool update)
 {
-    __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    __MULTIDICT_VALIDATION_CHECK(other, state_, -1);
-    return md_update_from_ht(
-        (MultiDictObject*)self, (MultiDictObject*)other, update);
+    return (MultiDict_CheckOrException(self, state_) &&
+            MultiDict_CheckOrException(other, state_))
+               ? -1
+               : md_update_from_ht(
+                     (MultiDictObject*)self, (MultiDictObject*)other, update);
 }
 
 static int
 MultiDict_UpdateFromDict(void* state_, PyObject* self, PyObject* kwds,
                          bool update)
 {
-    __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    return md_update_from_dict((MultiDictObject*)self, kwds, update);
+    return MultiDict_CheckOrException(state_, self)
+               ? -1
+               : md_update_from_dict((MultiDictObject*)self, kwds, update);
 }
 
 static int
 MultiDict_UpdateFromSequence(void* state_, PyObject* self, PyObject* seq,
                              bool update)
 {
-    __MULTIDICT_VALIDATION_CHECK(self, state_, -1);
-    return md_update_from_seq((MultiDictObject*)self, seq, update);
+    return MultiDict_CheckOrException(state_, self)
+               ? -1
+               : md_update_from_seq((MultiDictObject*)self, seq, update);
 }
 
 static void
