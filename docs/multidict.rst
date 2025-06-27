@@ -503,7 +503,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    Carries the module state to help lookup types and other objects.
 
 
-.. c:function:: static inline MultiDict_CAPI* MultiDict_Import()
+.. c:function:: MultiDict_CAPI* MultiDict_Import()
 
    Imports Multidict CAPI as a capsule object.
 
@@ -511,7 +511,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :retval NULL: if object fails to import
 
 
-.. c:function:: static inline PyTypeObject* MultiDict_GetType(MultiDict_CAPI* api)
+.. c:function:: PyTypeObject* MultiDict_GetType(MultiDict_CAPI* api)
    
    Obtains the :class:`MultiDict` TypeObject.
 
@@ -520,7 +520,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :retval NULL: if an exception was raised
 
 
-.. c:function:: static inline int MultiDict_CheckExact(MultiDict_CAPI* api, PyObject* op)
+.. c:function:: int MultiDict_CheckExact(MultiDict_CAPI* api, PyObject* op)
 
    Checks if :class:`MultiDict` object type matches exactly.
 
@@ -530,7 +530,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :retval 0: if false
    :retval -1: if exception was raised
 
-.. c:function:: static inline int MultiDict_Add(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject* value)
+.. c:function:: int MultiDict_Add(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject* value)
 
    Adds a new entry to the :class:`MultiDict` object.
 
@@ -541,7 +541,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :retval 0: on success
    :reval -1: on failure
 
-.. c:function:: static inline int MultiDict_Clear(MultiDict_CAPI* api, PyObject* self)
+.. c:function:: int MultiDict_Clear(MultiDict_CAPI* api, PyObject* self)
 
    Clears a :class:`MultiDict` object and removes all it's entries.
 
@@ -594,7 +594,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :retval -1: if failure had occurred
 
 
-.. c:function:: static inline PyObject* MultiDict_GetOne(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject** result)
+.. c:function:: PyObject* MultiDict_GetOne(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject** result)
 
    Return the **first** value for *key* if *key* is in the
    dictionary, else *NULL*.
@@ -609,7 +609,7 @@ The library is also shipped with a C-API, the header files can be compiled using
 
    
 
-.. c:function:: static inline PyObject* MultiDict_PopOne(MultiDict_CAPI* api, PyObject* self, PyObject* key)
+.. c:function:: PyObject* MultiDict_PopOne(MultiDict_CAPI* api, PyObject* self, PyObject* key)
 
    Remove and return a value from the dictionary.
 
@@ -621,7 +621,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    
 
 
-.. c:function:: static inline PyObject* MultiDict_PopAll(MultiDict_CAPI* api, PyObject* self, PyObject* key)
+.. c:function:: PyObject* MultiDict_PopAll(MultiDict_CAPI* api, PyObject* self, PyObject* key)
 
    Pops all related objects corresponding to `key`
 
@@ -632,7 +632,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :retval NULL: on error and raises either :exc:`KeyError` or :exc:`TypeError`
 
 
-.. c:function:: static inline PyObject* MultiDict_PopItem(MultiDict_CAPI* api, PyObject* self)
+.. c:function:: PyObject* MultiDict_PopItem(MultiDict_CAPI* api, PyObject* self)
 
    Remove and return an arbitrary ``(key, value)`` pair from the
    dictionary.
@@ -643,7 +643,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :retval NULL: on error along with :exc:`TypeError` or :exc:`KeyError` raised
 
 
-.. c:function:: static inline int MultiDict_Replace(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject* value)
+.. c:function:: int MultiDict_Replace(MultiDict_CAPI* api, PyObject* self, PyObject* key, PyObject* value)
 
    Replaces a set object with another object
 
@@ -655,7 +655,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :retval -1: on failure and raises :exc:`TypeError`
 
 
-.. c:function:: static inline int MultiDict_UpdateFromMultiDict(MultiDict_CAPI* api, PyObject* self, PyObject* other, bool update)
+.. c:function:: int MultiDict_UpdateFromMultiDict(MultiDict_CAPI* api, PyObject* self, PyObject* other, bool update)
 
    Updates Multidict object using another MultiDict Object
 
@@ -668,7 +668,7 @@ The library is also shipped with a C-API, the header files can be compiled using
 
 
 
-.. c:function:: static inline int MultiDict_UpdateFromDict(MultiDict_CAPI* api, PyObject* self, PyObject* kwds, bool update)
+.. c:function:: int MultiDict_UpdateFromDict(MultiDict_CAPI* api, PyObject* self, PyObject* kwds, bool update)
 
    Updates Multidict object using another Dictionary Object
 
@@ -680,7 +680,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :retval -1: on failure
 
 
-.. c:function:: static inline int MultiDict_UpdateFromSequence(MultiDict_CAPI* api, PyObject* self, PyObject* seq, bool update)
+.. c:function:: int MultiDict_UpdateFromSequence(MultiDict_CAPI* api, PyObject* self, PyObject* seq, bool update)
 
    Updates Multidict object using a sequence object
 
@@ -692,7 +692,7 @@ The library is also shipped with a C-API, the header files can be compiled using
    :retval -1: on failure
 
 
-.. c:function:: static inline int MultiDict_Equals(MultiDict_CAPI* api, PyObject* self, PyObject* other)
+.. c:function:: int MultiDict_Equals(MultiDict_CAPI* api, PyObject* self, PyObject* other)
 
    Checks to see if a multidict matches another dictionary or multidict object
 
