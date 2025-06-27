@@ -864,7 +864,7 @@ md_get_one(MultiDictObject *md, PyObject *key, PyObject **ret)
     }
 
     Py_DECREF(identity);
-    return -1;
+    return 0;
 fail:
     Py_XDECREF(identity);
     return -1;
