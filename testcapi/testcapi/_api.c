@@ -156,7 +156,19 @@ md_getone(PyObject *self, PyObject *const *args, Py_ssize_t nargs)
     }
     PyObject *result = NULL;
     int ret = MultiDict_GetOne(get_capi(self), args[0], args[1], &result);
-    return capi_handle_result(ret, result);
+
+    // XXX: currently, md_get_one only hands out -1
+    if (ret <= 0) {
+        return PyTuple_Pack(2, Py_None, Py_False);
+    }
+
+    assert(result != NULL);
+    PyObject *val = PyBool_FromLong(ret);
+    if (val == NULL) {
+        Py_CLEAR(result);
+        return NULL;
+    }
+    return PyTuple_Pack(2, result, val);
 }
 
 static PyObject *

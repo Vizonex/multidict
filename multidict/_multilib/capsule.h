@@ -54,8 +54,8 @@ static int
 MultiDict_Add(void* state_, PyObject* self, PyObject* key, PyObject* value)
 {
     return MultiDict_CheckOrException(state_, self)
-               ? -1
-               : md_add((MultiDictObject*)self, key, value);
+               ? md_add((MultiDictObject*)self, key, value)
+               : -1;
 }
 
 static int
@@ -63,8 +63,8 @@ MultiDict_Clear(void* state_, PyObject* self)
 {
     // TODO: Macro for repeated steps being done?
     return MultiDict_CheckOrException(state_, self)
-               ? -1
-               : md_clear((MultiDictObject*)self);
+               ? md_clear((MultiDictObject*)self)
+               : -1;
 }
 
 static int
@@ -72,16 +72,16 @@ MultiDict_SetDefault(void* state_, PyObject* self, PyObject* key,
                      PyObject* value, PyObject** result)
 {
     return MultiDict_CheckOrException(state_, self)
-               ? -1
-               : md_set_default((MultiDictObject*)self, key, value, result);
+               ? md_set_default((MultiDictObject*)self, key, value, result)
+               : -1;
 }
 
 static int
 MultiDict_Del(void* state_, PyObject* self, PyObject* key)
 {
     return MultiDict_CheckOrException(state_, self)
-               ? -1
-               : md_del((MultiDictObject*)self, key);
+               ? md_del((MultiDictObject*)self, key)
+               : -1;
 }
 
 static uint64_t
@@ -95,8 +95,8 @@ static int
 MultiDict_Contains(void* state_, PyObject* self, PyObject* key)
 {
     return MultiDict_CheckOrException(state_, self)
-               ? -1
-               : md_contains((MultiDictObject*)self, key, NULL);
+               ? md_contains((MultiDictObject*)self, key, NULL)
+               : -1;
 };
 
 // Suggestion: Would be smart in to do what python does and provide
@@ -110,8 +110,8 @@ MultiDict_GetOne(void* state_, PyObject* self, PyObject* key,
                  PyObject** result)
 {
     return MultiDict_CheckOrException(state_, self)
-               ? -1
-               : md_get_one((MultiDictObject*)self, key, result);
+               ? md_get_one((MultiDictObject*)self, key, result)
+               : -1;
 }
 
 static int
@@ -119,8 +119,8 @@ MultiDict_GetAll(void* state_, PyObject* self, PyObject* key,
                  PyObject** result)
 {
     return MultiDict_CheckOrException(state_, self)
-               ? -1
-               : md_get_all((MultiDictObject*)self, key, result);
+               ? md_get_all((MultiDictObject*)self, key, result)
+               : -1;
 }
 
 static int
@@ -128,8 +128,8 @@ MultiDict_PopOne(void* state_, PyObject* self, PyObject* key,
                  PyObject** result)
 {
     return MultiDict_CheckOrException(state_, self)
-               ? -1
-               : md_pop_one((MultiDictObject*)self, key, result);
+               ? md_pop_one((MultiDictObject*)self, key, result)
+               : -1;
 }
 
 static int
@@ -137,24 +137,24 @@ MultiDict_PopAll(void* state_, PyObject* self, PyObject* key,
                  PyObject** result)
 {
     return MultiDict_CheckOrException(state_, self)
-               ? -1
-               : md_pop_all((MultiDictObject*)self, key, result);
+               ? md_pop_all((MultiDictObject*)self, key, result)
+               : -1;
 }
 
 static PyObject*
 MultiDict_PopItem(void* state_, PyObject* self)
 {
     return MultiDict_CheckOrException(state_, self)
-               ? NULL
-               : md_pop_item((MultiDictObject*)self);
+               ? md_pop_item((MultiDictObject*)self)
+               : NULL;
 }
 
 static int
 MultiDict_Replace(void* state_, PyObject* self, PyObject* key, PyObject* value)
 {
     return MultiDict_CheckOrException(state_, self)
-               ? -1
-               : md_replace((MultiDictObject*)self, key, value);
+               ? md_replace((MultiDictObject*)self, key, value)
+               : -1;
 }
 
 static int
@@ -163,9 +163,9 @@ MultiDict_UpdateFromMultiDict(void* state_, PyObject* self, PyObject* other,
 {
     return (MultiDict_CheckOrException(self, state_) &&
             MultiDict_CheckOrException(other, state_))
-               ? -1
-               : md_update_from_ht(
-                     (MultiDictObject*)self, (MultiDictObject*)other, update);
+               ? md_update_from_ht(
+                     (MultiDictObject*)self, (MultiDictObject*)other, update)
+               : -1;
 }
 
 static int
@@ -173,8 +173,8 @@ MultiDict_UpdateFromDict(void* state_, PyObject* self, PyObject* kwds,
                          bool update)
 {
     return MultiDict_CheckOrException(state_, self)
-               ? -1
-               : md_update_from_dict((MultiDictObject*)self, kwds, update);
+               ? md_update_from_dict((MultiDictObject*)self, kwds, update)
+               : -1;
 }
 
 static int
@@ -182,8 +182,8 @@ MultiDict_UpdateFromSequence(void* state_, PyObject* self, PyObject* seq,
                              bool update)
 {
     return MultiDict_CheckOrException(state_, self)
-               ? -1
-               : md_update_from_seq((MultiDictObject*)self, seq, update);
+               ? md_update_from_seq((MultiDictObject*)self, seq, update)
+               : -1;
 }
 
 static void
