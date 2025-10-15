@@ -635,10 +635,9 @@ MultiDictIter_New(void* state_, PyObject* self)
 {
     mod_state* state = (mod_state*)state_;
     MultiDictObject* md;
-    if (MultiDict_Check(state, self) || CIMultiDict_Check(state, self)) {
+    if (MultiDict_Check(state, self)) {
         md = (MultiDictObject*)self;
-    } else if (MultiDictProxy_Check(state, self) ||
-               CIMultiDictProxy_Check(state, self)) {
+    } else if (MultiDictProxy_Check(state, self)) {
         md = __MULTIDICTPROXY_GET_MD(self);
     } else {
         PyErr_Format(PyExc_TypeError,

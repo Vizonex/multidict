@@ -550,6 +550,436 @@ MultiDictIter_Next(MultiDict_CAPI* api, PyObject* self, PyObject** key,
     return api->MultiDictIter_Next(api->state, self, key, value);
 }
 
+#else
+
+/* USED FOR MAKING THE CYTHON BINDINGS */
+#ifdef MULTIDICT_CYTHON_IMPL
+
+static inline MultiDict_CAPI*
+MultiDict_Import()
+{
+    return (MultiDict_CAPI*)PyCapsule_Import(MultiDict_CAPSULE_NAME, 0);
+}
+
+/* Faster Wrapper bindings for cython that doesn't involve needing a
+CAPI Pointer state to use, this object should also be
+completely threadsafe */
+static MultiDict_CAPI* MultiDict_API;
+
+int
+multidict_import()
+{
+    MultiDict_API = MultiDict_Import();
+    return (MultiDict_API == NULL) ? -1 : 0;
+}
+
+static inline int
+MultiDict_CheckExact(PyObject* op)
+{
+    PyTypeObject* type =
+        MultiDict_API->MultiDict_GetType(MultiDict_API->state);
+    int ret = Py_IS_TYPE(op, type);
+    Py_DECREF(type);
+    return ret;
+}
+
+static inline int
+MultiDict_Check(PyObject* op)
+{
+    PyTypeObject* type =
+        MultiDict_API->MultiDict_GetType(MultiDict_API->state);
+    int ret = Py_IS_TYPE(op, type) || PyObject_TypeCheck(op, type);
+    Py_DECREF(type);
+    return ret;
+}
+
+static inline PyObject*
+MultiDict_New(int prealloc_size)
+{
+    return MultiDict_API->MultiDict_New(MultiDict_API->state, prealloc_size);
+}
+
+static inline int
+MultiDict_Add(PyObject* self, PyObject* key, PyObject* value)
+{
+    return MultiDict_API->MultiDict_Add(
+        MultiDict_API->state, self, key, value);
+}
+
+static inline int
+MultiDict_Clear(PyObject* self)
+{
+    return MultiDict_API->MultiDict_Clear(MultiDict_API->state, self);
+}
+
+static inline int
+MultiDict_SetDefault(PyObject* self, PyObject* key, PyObject* default_,
+                     PyObject** result)
+{
+    return MultiDict_API->MultiDict_SetDefault(
+        MultiDict_API->state, self, key, default_, result);
+}
+
+static inline int
+MutliDict_Del(PyObject* self, PyObject* key)
+{
+    return MultiDict_API->MultiDict_Del(MultiDict_API->state, self, key);
+}
+
+static uint64_t
+MultiDict_Version(PyObject* self)
+{
+    return MultiDict_API->MultiDict_Version(MultiDict_API->state, self);
+}
+
+static inline int
+MultiDict_Contains(PyObject* self, PyObject* key)
+{
+    return MultiDict_API->MultiDict_Contains(MultiDict_API->state, self, key);
+}
+
+static inline int
+MultiDict_GetOne(PyObject* self, PyObject* key, PyObject** result)
+{
+    return MultiDict_API->MultiDict_GetOne(
+        MultiDict_API->state, self, key, result);
+}
+
+static inline int
+MultiDict_GetAll(PyObject* self, PyObject* key, PyObject** result)
+{
+    return MultiDict_API->MultiDict_GetAll(
+        MultiDict_API->state, self, key, result);
+}
+
+static inline int
+MultiDict_PopOne(PyObject* self, PyObject* key, PyObject** result)
+{
+    return MultiDict_API->MultiDict_PopOne(
+        MultiDict_API->state, self, key, result);
+}
+
+static inline int
+MultiDict_PopAll(PyObject* self, PyObject* key, PyObject** result)
+{
+    return MultiDict_API->MultiDict_PopAll(
+        MultiDict_API->state, self, key, result);
+}
+
+static inline PyObject*
+MultiDict_PopItem(PyObject* self)
+{
+    return MultiDict_API->MultiDict_PopItem(MultiDict_API->state, self);
+}
+
+static inline int
+MultiDict_Replace(PyObject* self, PyObject* key, PyObject* value)
+{
+    return MultiDict_API->MultiDict_Replace(
+        MultiDict_API->state, self, key, value);
+};
+
+static inline int
+MultiDict_UpdateFromMultiDict(PyObject* self, PyObject* other, UpdateOp op)
+{
+    return MultiDict_API->MultiDict_UpdateFromMultiDict(
+        MultiDict_API->state, self, other, op);
+};
+
+static inline int
+MultiDict_UpdateFromDict(PyObject* self, PyObject* other, UpdateOp op)
+{
+    return MultiDict_API->MultiDict_UpdateFromDict(
+        MultiDict_API->state, self, other, op);
+};
+
+static inline int
+MultiDict_UpdateFromSequence(PyObject* self, PyObject* seq, UpdateOp op)
+{
+    return MultiDict_API->MultiDict_UpdateFromSequence(
+        MultiDict_API->state, self, seq, op);
+};
+
+static inline PyObject*
+MultiDictProxy_New(PyObject* md)
+{
+    return MultiDict_API->MultiDictProxy_New(MultiDict_API->state, md);
+}
+
+static inline int
+MultiDictProxy_CheckExact(PyObject* op)
+{
+    PyTypeObject* type =
+        MultiDict_API->MultiDict_GetType(MultiDict_API->state);
+    int ret = Py_IS_TYPE(op, type);
+    Py_DECREF(type);
+    return ret;
+}
+
+static inline int
+MultiDictProxy_Check(PyObject* op)
+{
+    PyTypeObject* type =
+        MultiDict_API->MultiDictProxy_GetType(MultiDict_API->state);
+    int ret = Py_IS_TYPE(op, type) || PyObject_TypeCheck(op, type);
+    Py_DECREF(type);
+    return ret;
+}
+
+static inline int
+MultiDictProxy_Contains(PyObject* self, PyObject* key)
+{
+    return MultiDict_API->MultiDictProxy_Contains(
+        MultiDict_API->state, self, key);
+}
+
+static inline int
+MultiDictProxy_GetAll(PyObject* self, PyObject* key, PyObject** result)
+{
+    return MultiDict_API->MultiDictProxy_GetAll(
+        MultiDict_API->state, self, key, result);
+}
+
+static inline int
+MultiDictProxy_GetOne(PyObject* self, PyObject* key, PyObject** result)
+{
+    return MultiDict_API->MultiDictProxy_GetOne(
+        MultiDict_API->state, self, key, result);
+}
+
+static inline PyTypeObject*
+MultiDictProxy_GetType()
+{
+    return MultiDict_API->MultiDictProxy_GetType(MultiDict_API->state);
+}
+
+static inline int
+IStr_CheckExact(PyObject* op)
+{
+    PyTypeObject* type = MultiDict_API->IStr_GetType(MultiDict_API->state);
+    int ret = Py_IS_TYPE(op, type);
+    Py_DECREF(type);
+    return ret;
+}
+
+static inline int
+IStr_Check(PyObject* op)
+{
+    PyTypeObject* type = MultiDict_API->IStr_GetType(MultiDict_API->state);
+    int ret = Py_IS_TYPE(op, type) || PyObject_TypeCheck(op, type);
+    Py_DECREF(type);
+    return ret;
+}
+
+static PyObject*
+IStr_FromUnicode(PyObject* str)
+{
+    return MultiDict_API->IStr_FromUnicode(MultiDict_API->state, str);
+}
+
+static PyObject*
+IStr_FromStringAndSize(const char* str, Py_ssize_t size)
+{
+    return MultiDict_API->IStr_FromStringAndSize(
+        MultiDict_API->state, str, size);
+}
+
+static PyObject*
+IStr_FromString(const char* str)
+{
+    return MultiDict_API->IStr_FromString(MultiDict_API->state, str);
+}
+
+static inline int
+CIMultiDict_CheckExact(PyObject* op)
+{
+    PyTypeObject* type =
+        MultiDict_API->MultiDict_GetType(MultiDict_API->state);
+    int ret = Py_IS_TYPE(op, type);
+    Py_DECREF(type);
+    return ret;
+}
+
+static inline int
+CIMultiDict_Check(PyObject* op)
+{
+    PyTypeObject* type =
+        MultiDict_API->MultiDict_GetType(MultiDict_API->state);
+    int ret = Py_IS_TYPE(op, type) || PyObject_TypeCheck(op, type);
+    Py_DECREF(type);
+    return ret;
+}
+
+static inline PyObject*
+CIMultiDict_New(int prealloc_size)
+{
+    return MultiDict_API->CIMultiDict_New(MultiDict_API->state, prealloc_size);
+}
+
+static inline int
+CIMultiDict_Add(PyObject* self, PyObject* key, PyObject* value)
+{
+    return MultiDict_API->CIMultiDict_Add(
+        MultiDict_API->state, self, key, value);
+}
+
+static inline int
+CIMultiDict_Clear(PyObject* self)
+{
+    return MultiDict_API->CIMultiDict_Clear(MultiDict_API->state, self);
+}
+
+static inline int
+CIMultiDict_SetDefault(PyObject* self, PyObject* key, PyObject* default_,
+                       PyObject** result)
+{
+    return MultiDict_API->CIMultiDict_SetDefault(
+        MultiDict_API->state, self, key, default_, result);
+}
+
+static inline int
+CIMutliDict_Del(PyObject* self, PyObject* key)
+{
+    return MultiDict_API->CIMultiDict_Del(MultiDict_API->state, self, key);
+}
+
+static uint64_t
+CIMultiDict_Version(PyObject* self)
+{
+    return MultiDict_API->CIMultiDict_Version(MultiDict_API->state, self);
+}
+
+static inline int
+CIMultiDict_Contains(PyObject* self, PyObject* key)
+{
+    return MultiDict_API->CIMultiDict_Contains(
+        MultiDict_API->state, self, key);
+}
+
+static inline int
+CIMultiDict_GetOne(PyObject* self, PyObject* key, PyObject** result)
+{
+    return MultiDict_API->CIMultiDict_GetOne(
+        MultiDict_API->state, self, key, result);
+}
+
+static inline int
+CIMultiDict_GetAll(PyObject* self, PyObject* key, PyObject** result)
+{
+    return MultiDict_API->CIMultiDict_GetAll(
+        MultiDict_API->state, self, key, result);
+}
+
+static inline int
+CIMultiDict_PopOne(PyObject* self, PyObject* key, PyObject** result)
+{
+    return MultiDict_API->CIMultiDict_PopOne(
+        MultiDict_API->state, self, key, result);
+}
+
+static inline int
+CIMultiDict_PopAll(PyObject* self, PyObject* key, PyObject** result)
+{
+    return MultiDict_API->CIMultiDict_PopAll(
+        MultiDict_API->state, self, key, result);
+}
+
+static inline PyObject*
+CIMultiDict_PopItem(PyObject* self)
+{
+    return MultiDict_API->CIMultiDict_PopItem(MultiDict_API->state, self);
+}
+
+static inline int
+CIMultiDict_Replace(PyObject* self, PyObject* key, PyObject* value)
+{
+    return MultiDict_API->CIMultiDict_Replace(
+        MultiDict_API->state, self, key, value);
+};
+
+static inline int
+CIMultiDict_UpdateFromMultiDict(PyObject* self, PyObject* other, UpdateOp op)
+{
+    return MultiDict_API->CIMultiDict_UpdateFromMultiDict(
+        MultiDict_API->state, self, other, op);
+};
+
+static inline int
+CIMultiDict_UpdateFromDict(PyObject* self, PyObject* other, UpdateOp op)
+{
+    return MultiDict_API->CIMultiDict_UpdateFromDict(
+        MultiDict_API->state, self, other, op);
+};
+
+static inline int
+CIMultiDict_UpdateFromSequence(PyObject* self, PyObject* seq, UpdateOp op)
+{
+    return MultiDict_API->CIMultiDict_UpdateFromSequence(
+        MultiDict_API->state, self, seq, op);
+};
+
+static inline PyObject*
+CIMultiDictProxy_New(PyObject* md)
+{
+    return MultiDict_API->CIMultiDictProxy_New(MultiDict_API->state, md);
+}
+
+static inline int
+CIMultiDictProxy_CheckExact(PyObject* op)
+{
+    PyTypeObject* type =
+        MultiDict_API->CIMultiDictProxy_GetType(MultiDict_API->state);
+    int ret = Py_IS_TYPE(op, type);
+    Py_DECREF(type);
+    return ret;
+}
+
+static inline int
+CIMultiDictProxy_Check(PyObject* op)
+{
+    PyTypeObject* type =
+        MultiDict_API->CIMultiDictProxy_GetType(MultiDict_API->state);
+    int ret = Py_IS_TYPE(op, type) || PyObject_TypeCheck(op, type);
+    Py_DECREF(type);
+    return ret;
+}
+
+static inline int
+CIMultiDictProxy_Contains(PyObject* self, PyObject* key)
+{
+    return MultiDict_API->CIMultiDictProxy_Contains(
+        MultiDict_API->state, self, key);
+}
+
+static inline int
+CIMultiDictProxy_GetAll(PyObject* self, PyObject* key, PyObject** result)
+{
+    return MultiDict_API->CIMultiDictProxy_GetAll(
+        MultiDict_API->state, self, key, result);
+}
+
+static inline int
+CIMultiDictProxy_GetOne(PyObject* self, PyObject* key, PyObject** result)
+{
+    return MultiDict_API->CIMultiDictProxy_GetOne(
+        MultiDict_API->state, self, key, result);
+}
+
+static inline PyObject*
+MultiDictIter_New(PyObject* self)
+{
+    return MultiDict_API->MultiDictIter_New(MultiDict_API->state, self);
+}
+
+static inline int
+MultiDictIter_Next(PyObject* self, PyObject** key, PyObject** value)
+{
+    return MultiDict_API->MultiDictIter_Next(
+        MultiDict_API->state, self, key, value);
+}
+
+#endif /* MULTIDICT_CYTHON_API */
+
 #endif
 
 #ifdef __cplusplus
